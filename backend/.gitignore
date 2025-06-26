@@ -1,0 +1,24 @@
+# Node.js
+node_modules/
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# Build output
+dist/
+
+# Postgres data
+postgres_data/
+
+# Docker
+*.pid
+
+# System files
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/ 
