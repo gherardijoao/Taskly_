@@ -5,7 +5,7 @@ module.exports = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  synchronize: true, // Em produção, use migrations!
+  synchronize: true, 
   logging: false,
   entities: ['src/models/**/*.ts'],
   migrations: ['src/database/migrations/**/*.ts'],

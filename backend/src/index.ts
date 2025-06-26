@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import { AppDataSource } from './database/data-source';
 import userRoutes from './routes/user.routes';
+import authRoutes from './routes/auth.routes';
 import { setupSwagger } from './swagger';
 
 const app = express();
@@ -11,6 +12,7 @@ setupSwagger(app);
 
 app.use(express.json());
 app.use(userRoutes);
+app.use(authRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
