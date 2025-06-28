@@ -39,4 +39,4 @@ router.post('/users', (req, res) => {
   userController.create(req, res);
 });
 
-export default router;
+export default router; 

@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { Usuario } from '../models/Usuario';
+import { Tarefa } from '../models/Tarefa';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,6 +12,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true, // Em produção, use migrations!
   logging: false,
-  entities: [Usuario],
+  entities: [Usuario, Tarefa],
   migrations: ['src/database/migrations/**/*.ts'],
-}); 
+});
