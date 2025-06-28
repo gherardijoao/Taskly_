@@ -28,6 +28,8 @@ Responsável por armazenar as tarefas criadas pelos usuários.
 
 * **`id_usuario`** (`UUID`, Chave Estrangeira - FK, Não Nulo): Referência ao `id` da tabela `Usuario`. Indica qual usuário é o proprietário da tarefa. É obrigatório que uma tarefa esteja associada a um usuário.
 
+* **`nome_usuario`** (`VARCHAR(255)`, Não Nulo): Nome do usuário proprietário da tarefa. Facilita a identificação visual no banco de dados.
+
 * **`nome`** (`VARCHAR(255)`, Não Nulo): O título ou nome curto da tarefa.
 
 * **`descricao`** (`TEXT`, Pode ser Nulo): Uma descrição mais detalhada da tarefa.
@@ -47,5 +49,12 @@ Existe um relacionamento de **Um para Muitos (1:N)** entre `Usuario` e `Tarefa`:
 * **Uma `Tarefa`** deve pertencer a **um e apenas um `Usuario`**.
 
 Este relacionamento é estabelecido pela Chave Estrangeira `id_usuario` na tabela `Tarefa`, que referencia a Chave Primária `id` na tabela `Usuario`.
+
+## 3. Benefícios do Campo `nome_usuario`
+
+* **Facilita consultas visuais** no banco de dados
+* **Melhora a legibilidade** das tarefas sem precisar fazer JOIN
+* **Mantém histórico** do nome do usuário mesmo se ele mudar o nome
+* **Otimiza performance** para consultas que precisam do nome do usuário
 
 Este documento serve como a base para a criação do seu banco de dados e para futuras referências sobre o esquema da aplicação.
