@@ -69,8 +69,25 @@
 }
 
 .auth-link a {
-  color: #646cff;
+  color: #ffffff;
   font-weight: 500;
+  text-decoration: none;
+  position: relative;
+}
+
+.auth-link a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #ffffff;
+  transition: width 0.3s ease;
+}
+
+.auth-link a:hover::after {
+  width: 100%;
 }
 
 button {

@@ -1,7 +1,6 @@
 :root {
   --primary-color: #1a1a1a;
   --text-color: #ffffff;
-  --accent-color: #646cff;
   --input-bg: #1a1a1a;
   --button-bg: #1a1a1a;
   --button-hover: #333;
@@ -47,10 +46,12 @@ input {
   color: var(--text-color);
   font-size: 1.05rem;
   display: block;
+  transition: box-shadow 0.3s ease;
 }
 
 input:focus {
-  outline: 1px solid var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 button {
@@ -79,9 +80,7 @@ a {
   cursor: pointer;
 }
 
-a:hover {
-  text-decoration: underline;
-}
+
 
 .app-container {
   width: 100%;
