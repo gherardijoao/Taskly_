@@ -21,4 +21,7 @@ postgres_data/
 Thumbs.db
 
 # VSCode
-.vscode/ 
+.vscode/
+
+# Test coverage
+coverage/ 
