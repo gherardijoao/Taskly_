@@ -1,0 +1,61 @@
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.dashboard-header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 400;
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info span {
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.logout-button {
+  background-color: transparent;
+  border: 1px solid #646cff;
+  color: #646cff;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #646cff;
+  color: #000;
+}
+
+.dashboard-content {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.dashboard-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+} 
