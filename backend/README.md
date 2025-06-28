@@ -108,11 +108,11 @@ http://localhost:3000/api-docs
 ```json
 {
   "user": {
-    "id": "uuid-gerado",
-    "email": "joao@email.com",
-    "nome": "João da Silva",
-    "dataCriacao": "2024-05-30T12:34:56.789Z",
-    "dataAtualizacao": "2024-05-30T12:34:56.789Z"
+  "id": "uuid-gerado",
+  "email": "joao@email.com",
+  "nome": "João da Silva",
+  "dataCriacao": "2024-05-30T12:34:56.789Z",
+  "dataAtualizacao": "2024-05-30T12:34:56.789Z"
   },
   "token": "eyJhbGciOiJIUzI1NiIs..."
 }

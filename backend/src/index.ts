@@ -28,10 +28,10 @@ AppDataSource.initialize()
     // Atualizar tarefas existentes
     await updateExistingTasks();
     
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, () => {
+      console.log(` Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
     console.error('❌ Erro ao conectar no banco:', err);
-  });
+});

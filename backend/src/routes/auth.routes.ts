@@ -55,6 +55,8 @@ const authController = new AuthController();
  *       401:
  *         description: Usuário ou senha inválidos
  */
-router.post('/login', authController.login.bind(authController));
+router.post('/login', (req, res) => {
+  authController.login(req, res);
+});
 
 export default router; 

@@ -29,10 +29,10 @@ import {
     @Column({ type: 'varchar', length: 50, default: 'pendente' })
     status!: 'pendente' | 'concluída';
   
-    @CreateDateColumn({ type: 'timestamptz', name: 'data_criacao' })
+    @CreateDateColumn({ name: 'data_criacao' })
     dataCriacao!: Date;
   
-    @UpdateDateColumn({ type: 'timestamptz', name: 'data_atualizacao' })
+    @UpdateDateColumn({ name: 'data_atualizacao' })
     dataAtualizacao!: Date;
   
     // Relacionamento Many-to-One com Usuario

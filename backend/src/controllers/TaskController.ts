@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
 import { TarefaService } from '../services/TaskService';
 
-const tarefaService = new TarefaService();
-
 export class TarefaController {
+  private tarefaService: TarefaService;
+
+  constructor() {
+    this.tarefaService = new TarefaService();
+  }
+
   async create(req: Request, res: Response): Promise<void> {
     const { nome, descricao, status } = req.body;
     const userId = (req as any).user.userId;
@@ -15,7 +19,7 @@ export class TarefaController {
     }
 
     try {
-      const tarefa = await tarefaService.createTarefa(userId, {
+      const tarefa = await this.tarefaService.createTarefa(userId, {
         nome,
         descricao,
         status,
@@ -33,9 +37,9 @@ export class TarefaController {
     try {
       let tarefas;
       if (status && (status === 'pendente' || status === 'concluída')) {
-        tarefas = await tarefaService.getTarefasByStatus(userId, status as 'pendente' | 'concluída');
+        tarefas = await this.tarefaService.getTarefasByStatus(userId, status as 'pendente' | 'concluída');
       } else {
-        tarefas = await tarefaService.getTarefasByUser(userId);
+        tarefas = await this.tarefaService.getTarefasByUser(userId);
       }
       res.json(tarefas);
     } catch (err: any) {
@@ -53,7 +57,7 @@ export class TarefaController {
     }
 
     try {
-      const tarefa = await tarefaService.getTarefaById(id, userId);
+      const tarefa = await this.tarefaService.getTarefaById(id, userId);
       res.json(tarefa);
     } catch (err: any) {
       res.status(404).json({ error: err.message });
@@ -79,7 +83,7 @@ export class TarefaController {
     }
 
     try {
-      const tarefa = await tarefaService.updateTarefa(id, userId, {
+      const tarefa = await this.tarefaService.updateTarefa(id, userId, {
         nome,
         descricao,
         status,
@@ -101,7 +105,7 @@ export class TarefaController {
     }
 
     try {
-      await tarefaService.deleteTarefa(id, userId);
+      await this.tarefaService.deleteTarefa(id, userId);
       res.status(204).send();
     } catch (err: any) {
       const statusCode = err.message === 'Tarefa não encontrada' ? 404 : 500;

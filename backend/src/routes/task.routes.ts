@@ -223,4 +223,4 @@ router.delete('/tarefas/:id', authMiddleware, async (req, res) => {
   await tarefaController.delete(req, res);
 });
 
-export default router; 
+export default router;
