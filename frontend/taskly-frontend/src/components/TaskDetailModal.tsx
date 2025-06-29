@@ -42,13 +42,15 @@ const TaskDetailModal = ({ isOpen, onClose, onTaskUpdated, onTaskDeleted, taskId
   // Formatar data para exibição
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Não definida';
-    
+    // Se vier no formato 'YYYY-MM-DD' ou 'YYYY-MM-DD HH:mm:ss.sss', extrair só a parte da data
+    const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      const [, year, month, day] = match;
+      return `${day}/${month}/${year}`;
+    }
+    // Caso contrário, usar o método padrão
     const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
+    return date.toLocaleDateString('pt-BR');
   };
 
   // Carregar dados da tarefa e categorias disponíveis

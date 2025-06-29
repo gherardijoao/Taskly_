@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './Auth.css';
 import { authService } from '../../services/auth.service';
+
+// Interface para o estado de localização
+interface LocationState {
+  message?: string;
+}
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Verificar se o usuário já está autenticado
   useEffect(() => {
@@ -18,9 +25,20 @@ const Login = () => {
     }
   }, [navigate]);
 
+  // Verificar se há mensagem de sucesso do registro
+  useEffect(() => {
+    const state = location.state as LocationState;
+    if (state?.message) {
+      setSuccessMessage(state.message);
+      // Limpar a mensagem do histórico
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setIsLoading(true);
 
     try {
@@ -81,6 +99,17 @@ const Login = () => {
           transition={{ duration: 0.3 }}
         >
           {error}
+        </motion.div>
+      )}
+
+      {successMessage && (
+        <motion.div 
+          className="success-message"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {successMessage}
         </motion.div>
       )}
 

@@ -76,11 +76,11 @@ class AuthService {
     return user ? user.nome : '';
   }
 
-  private setToken(token: string): void {
+  setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
   }
 
-  private setUser(user: { id: string; nome: string; email: string }): void {
+  setUser(user: { id: string; nome: string; email: string }): void {
     localStorage.setItem(this.userKey, JSON.stringify(user));
   }
 }

@@ -16,6 +16,7 @@ interface Task {
   descricao?: string;
   status: 'pendente' | 'concluída';
   dataCriacao: string;
+  dataCumprimento?: string;
   tag?: string;
   categoria?: string;
 }
@@ -27,6 +28,7 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [completedTaskCount, setCompletedTaskCount] = useState(0);
   const [totalTaskCount, setTotalTaskCount] = useState(0);
+  const [todayTaskCount, setTodayTaskCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [tasksByCategory, setTasksByCategory] = useState<Record<string, number>>({});
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
@@ -66,6 +68,7 @@ const Dashboard = () => {
           descricao: task.descricao,
           status: task.status,
           dataCriacao: task.dataCriacao,
+          dataCumprimento: task.dataCumprimento,
           tag: task.categoria, // Usar categoria como tag para compatibilidade
           categoria: task.categoria
         }));
@@ -77,6 +80,10 @@ const Dashboard = () => {
         setCompletedTaskCount(summary.concluidas);
         setTotalTaskCount(summary.total);
         setTasksByCategory(summary.porCategoria);
+        
+        // Carregar contador de tarefas de hoje
+        const todayTasks = await taskService.getTodayTasks();
+        setTodayTaskCount(todayTasks.length);
         
         // Extrair categorias disponíveis do resumo
         const categories = Object.keys(summary.porCategoria).filter(
@@ -162,10 +169,7 @@ const Dashboard = () => {
   };
 
   const handleProfileClick = () => {
-    // Esta é uma função temporária para implementação futura
-    console.log('Perfil clicado - funcionalidade em breve');
-    // Navegará para a página de perfil no futuro
-    // navigate('/profile');
+    navigate('/profile');
   };
 
   const toggleMobileMenu = () => {
@@ -182,7 +186,11 @@ const Dashboard = () => {
       // Atualizar localmente para feedback imediato
       setTasks(prevTasks => 
         prevTasks.map(task => 
-          task.id === taskId ? { ...task, status: newStatus } : task
+          task.id === taskId ? { 
+            ...task, 
+            status: newStatus,
+            dataCumprimento: newStatus === 'concluída' ? new Date().toISOString() : undefined
+          } : task
         )
       );
 
@@ -212,6 +220,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -228,6 +237,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -243,6 +253,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -284,6 +295,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -307,6 +319,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -330,6 +343,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -359,6 +373,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -368,6 +383,10 @@ const Dashboard = () => {
       setCompletedTaskCount(summary.concluidas);
       setTotalTaskCount(summary.total);
       setTasksByCategory(summary.porCategoria);
+      
+      // Atualizar contador de tarefas de hoje
+      const todayTasks = await taskService.getTodayTasks();
+      setTodayTaskCount(todayTasks.length);
       
       // Atualizar categorias disponíveis
       const categories = Object.keys(summary.porCategoria).filter(
@@ -409,6 +428,7 @@ const Dashboard = () => {
         descricao: task.descricao,
         status: task.status,
         dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
         tag: task.categoria,
         categoria: task.categoria
       })));
@@ -441,6 +461,31 @@ const Dashboard = () => {
       opacity: 1,
       transition: { duration: 0.2 }
     }
+  };
+
+  const formatDate = (dateStr: string | undefined) => {
+    if (!dateStr) return '';
+    // Se vier no formato 'YYYY-MM-DD', tratar manualmente para evitar erro de fuso horário
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const [year, month, day] = dateStr.split('-');
+      const date = new Date(Number(year), Number(month) - 1, Number(day));
+      const currentYear = new Date().getFullYear();
+      const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
+      if (date.getFullYear() === currentYear) {
+        return `${Number(day)} de ${monthName}`;
+      }
+      return `${Number(day)} de ${monthName} de ${year}`;
+    }
+    // Caso contrário, usar o método padrão
+    const date = new Date(dateStr);
+    const currentYear = new Date().getFullYear();
+    const day = date.getDate();
+    const month = date.toLocaleDateString('pt-BR', { month: 'short' });
+    const year = date.getFullYear();
+    if (year === currentYear) {
+      return `${day} de ${month}`;
+    }
+    return `${day} de ${month} de ${year}`;
   };
 
   if (isLoading) {
@@ -531,7 +576,7 @@ const Dashboard = () => {
                   <FiCalendar className="menu-icon" />
                   <span>Hoje</span>
                 </div>
-                <span className="task-count">0</span>
+                <span className="task-count">{todayTaskCount}</span>
               </li>
             </ul>
           </motion.div>
@@ -716,10 +761,12 @@ const Dashboard = () => {
                   <div className="task-content">
                     <h3 className="task-title">{task.nome}</h3>
                     <span className="task-date">
-                      Criada em {new Date(task.dataCriacao).toLocaleDateString('pt-BR', { 
-                        day: 'numeric',
-                        month: 'short'
-                      })}
+                      Criada em {formatDate(task.dataCriacao)}
+                      {task.dataCumprimento && (
+                        <>
+                          {' '}• Cumprir até: {formatDate(task.dataCumprimento)}
+                        </>
+                      )}
                     </span>
                   </div>
                   <div className={`task-tag ${getTaskTag(task).toLowerCase()}`}>
