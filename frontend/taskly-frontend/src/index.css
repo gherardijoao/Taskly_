@@ -1,0 +1,93 @@
+:root {
+  --primary-color: #1a1a1a;
+  --text-color: #ffffff;
+  --input-bg: #1a1a1a;
+  --button-bg: #1a1a1a;
+  --button-hover: #333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #000000;
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+}
+
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 400;
+  font-size: 4rem;
+  margin-bottom: 2rem;
+}
+
+input {
+  font-family: 'Poppins', sans-serif;
+  width: 600px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  background-color: var(--input-bg);
+  border: none;
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 1.05rem;
+  display: block;
+  transition: box-shadow 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+button {
+  font-family: 'Poppins', sans-serif;
+  width: 600px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  display: block;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+}
+
+a {
+  color: var( --text-color);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}

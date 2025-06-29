@@ -6,7 +6,7 @@ const authController = new AuthController();
 
 /**
  * @openapi
- * /login:
+ * /auth/login:
  *   post:
  *     summary: Autentica um usuário e retorna um token JWT
  *     tags:
@@ -55,7 +55,7 @@ const authController = new AuthController();
  *       401:
  *         description: Usuário ou senha inválidos
  */
-router.post('/login', (req, res) => {
+router.post('/auth/login', (req, res) => {
   authController.login(req, res);
 });
 

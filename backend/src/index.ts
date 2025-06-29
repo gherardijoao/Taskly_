@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import { AppDataSource } from './database/data-source';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
@@ -12,6 +13,8 @@ const PORT = process.env.PORT || 3000;
 
 setupSwagger(app);
 
+// Enable CORS for all requests
+app.use(cors());
 app.use(express.json());
 app.use(userRoutes);
 app.use(authRoutes);
