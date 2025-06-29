@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './Auth.css';
+import { userService } from '../../services/user.service';
+import { authService } from '../../services/auth.service';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -10,6 +12,13 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  
+  // Verificar se o usuário já está autenticado
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,29 +26,19 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // Implementar a lógica de registro com a API
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          nome: name,
-          email, 
-          senha: password
-        }),
+      // Usar o serviço de usuário para registrar
+      await userService.register({
+        nome: name.trim(),
+        email: email.trim(),
+        senha: password
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro ao registrar');
-      }
-
-      // Redirecionar para login após registro bem-sucedido
+      
+      // Mostrar mensagem de sucesso e redirecionar para login
+      alert('Cadastro realizado com sucesso! Faça login para continuar.');
       navigate('/login');
     } catch (err: any) {
-      setError(err.message);
+      console.error('Erro no registro:', err);
+      setError(err.message || 'Erro ao registrar. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
