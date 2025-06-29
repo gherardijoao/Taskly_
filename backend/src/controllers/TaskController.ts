@@ -9,7 +9,7 @@ export class TarefaController {
   }
 
   async create(req: Request, res: Response): Promise<void> {
-    const { nome, descricao, status } = req.body;
+    const { nome, descricao, status, categoria, dataCumprimento } = req.body;
     const userId = (req as any).user.userId;
 
     // Validação de entrada
@@ -23,6 +23,8 @@ export class TarefaController {
         nome,
         descricao,
         status,
+        categoria,
+        dataCumprimento: dataCumprimento ? new Date(dataCumprimento) : undefined,
       });
       res.status(201).json(tarefa);
     } catch (err: any) {
@@ -32,15 +34,33 @@ export class TarefaController {
 
   async getAll(req: Request, res: Response): Promise<void> {
     const userId = (req as any).user.userId;
-    const { status } = req.query;
+    const { status, categoria, busca, dataInicio, dataFim } = req.query;
 
     try {
-      let tarefas;
-      if (status && (status === 'pendente' || status === 'concluída')) {
-        tarefas = await this.tarefaService.getTarefasByStatus(userId, status as 'pendente' | 'concluída');
-      } else {
-        tarefas = await this.tarefaService.getTarefasByUser(userId);
+      // Se tiver parâmetros de filtro, usa a busca avançada
+      if (busca || categoria || dataInicio || dataFim) {
+        const filtro = {
+          status: status as 'pendente' | 'concluída' | undefined,
+          categoria: categoria as string | undefined,
+          textoBusca: busca as string | undefined,
+          dataInicio: dataInicio ? new Date(dataInicio as string) : undefined,
+          dataFim: dataFim ? new Date(dataFim as string) : undefined,
+        };
+        
+        const tarefas = await this.tarefaService.buscarTarefas(userId, filtro);
+        res.json(tarefas);
+        return;
       }
+      
+      // Caso contrário, usa os métodos específicos
+      if (status && (status === 'pendente' || status === 'concluída')) {
+        const tarefas = await this.tarefaService.getTarefasByStatus(userId, status as 'pendente' | 'concluída');
+        res.json(tarefas);
+        return;
+      }
+      
+      // Busca todas as tarefas
+      const tarefas = await this.tarefaService.getTarefasByUser(userId);
       res.json(tarefas);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -66,7 +86,7 @@ export class TarefaController {
 
   async update(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const { nome, descricao, status } = req.body;
+    const { nome, descricao, status, categoria, dataCumprimento } = req.body;
     const userId = (req as any).user.userId;
 
     if (!id) {
@@ -75,9 +95,10 @@ export class TarefaController {
     }
 
     // Validar se pelo menos um campo foi enviado
-    if (nome === undefined && descricao === undefined && status === undefined) {
+    if (nome === undefined && descricao === undefined && status === undefined && 
+        categoria === undefined && dataCumprimento === undefined) {
       res.status(400).json({ 
-        error: 'Pelo menos um campo (nome, descricao ou status) deve ser fornecido' 
+        error: 'Pelo menos um campo deve ser fornecido para atualização' 
       });
       return;
     }
@@ -87,6 +108,8 @@ export class TarefaController {
         nome,
         descricao,
         status,
+        categoria,
+        dataCumprimento: dataCumprimento ? new Date(dataCumprimento) : undefined,
       });
       res.json(tarefa);
     } catch (err: any) {
@@ -110,6 +133,64 @@ export class TarefaController {
     } catch (err: any) {
       const statusCode = err.message === 'Tarefa não encontrada' ? 404 : 500;
       res.status(statusCode).json({ error: err.message });
+    }
+  }
+  
+  async getTarefasByCategoria(req: Request, res: Response): Promise<void> {
+    const { categoria } = req.params;
+    const userId = (req as any).user.userId;
+
+    if (!categoria) {
+      res.status(400).json({ error: 'Categoria é obrigatória' });
+      return;
+    }
+
+    try {
+      const tarefas = await this.tarefaService.getTarefasByCategoria(userId, categoria);
+      res.json(tarefas);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  
+  async getTarefasHoje(req: Request, res: Response): Promise<void> {
+    const userId = (req as any).user.userId;
+
+    try {
+      const tarefas = await this.tarefaService.getTarefasHoje(userId);
+      res.json(tarefas);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  
+  async buscarTarefas(req: Request, res: Response): Promise<void> {
+    const userId = (req as any).user.userId;
+    const { busca } = req.query;
+
+    if (!busca) {
+      res.status(400).json({ error: 'Termo de busca é obrigatório' });
+      return;
+    }
+
+    try {
+      const tarefas = await this.tarefaService.buscarTarefas(userId, { 
+        textoBusca: busca as string 
+      });
+      res.json(tarefas);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+  
+  async getResumoTarefas(req: Request, res: Response): Promise<void> {
+    const userId = (req as any).user.userId;
+
+    try {
+      const resumo = await this.tarefaService.getResumoTarefas(userId);
+      res.json(resumo);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
   }
 }

@@ -6,7 +6,7 @@ import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import taskRoutes from './routes/task.routes';
 import { setupSwagger } from './swagger';
-import { updateExistingTasks } from './database/update-existing-tasks';
+import { updateExistingTasks, updateTarefasTable } from './database/update-existing-tasks';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,11 +28,18 @@ AppDataSource.initialize()
   .then(async () => {
     console.log('✅ Banco de dados conectado');
     
-    // Atualizar tarefas existentes
-    await updateExistingTasks();
+    try {
+      // Atualizar tarefas existentes
+      await updateExistingTasks();
+      
+      // Atualizar estrutura da tabela de tarefas
+      await updateTarefasTable();
+    } catch (error) {
+      console.error('❌ Erro ao atualizar o banco de dados:', error);
+    }
     
-app.listen(PORT, () => {
-      console.log(` Server running on port ${PORT}`);
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {

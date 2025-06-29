@@ -29,8 +29,14 @@ import {
     @Column({ type: 'varchar', length: 50, default: 'pendente' })
     status!: 'pendente' | 'concluída';
   
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    categoria?: string;
+    
     @CreateDateColumn({ name: 'data_criacao' })
     dataCriacao!: Date;
+    
+    @Column({ type: 'timestamp', name: 'data_cumprimento', nullable: true })
+    dataCumprimento?: Date;
   
     @UpdateDateColumn({ name: 'data_atualizacao' })
     dataAtualizacao!: Date;
