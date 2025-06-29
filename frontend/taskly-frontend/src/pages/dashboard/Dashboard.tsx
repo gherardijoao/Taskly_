@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiSearch, FiPlus, FiFilter, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiSearch, FiPlus, FiFilter, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiSettings, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import './Dashboard.css';
 
 interface Task {
@@ -42,8 +42,25 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [completedTaskCount, setCompletedTaskCount] = useState(0);
   const [totalTaskCount, setTotalTaskCount] = useState(3);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Fechar o menu quando clicar fora dele
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -98,6 +115,10 @@ const Dashboard = () => {
     console.log('Perfil clicado - funcionalidade em breve');
     // Navegará para a página de perfil no futuro
     // navigate('/profile');
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
   };
 
   const toggleTaskStatus = async (taskId: string, currentStatus: 'pendente' | 'concluída') => {
@@ -166,11 +187,40 @@ const Dashboard = () => {
       initial="hidden"
       animate="visible"
     >
+      {/* Menu para dispositivos móveis - só será visível em mobile devido ao CSS */}
+      <div className="mobile-menu-container">
+        <div className="mobile-logo">TASKLY</div>
+        <button 
+          className={`hamburger-button ${mobileMenuOpen ? 'active' : ''}`} 
+          onClick={toggleMobileMenu} 
+          aria-label="Menu"
+        >
+          {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+        </button>
+      </div>
+
+      <div 
+        ref={mobileMenuRef}
+        className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}
+      >
+        <ul className="mobile-menu-items">
+          <li className="mobile-menu-item" onClick={handleProfileClick}>
+            <FiUser size={18} />
+            <span>Meu Perfil</span>
+          </li>
+          <li className="mobile-menu-item" onClick={handleLogout}>
+            <FiLogOut size={18} />
+            <span>Sair</span>
+          </li>
+        </ul>
+      </div>
+
+      {/* Sidebar para desktop - será oculta em mobile devido ao CSS */}
       <div className="dashboard-sidebar">
-        <motion.div variants={itemVariants} className="sidebar-header">
+        <div className="sidebar-header">
           <h1 className="logo-menu">TASKLY</h1>
           <p className="sidebar-subtitle">Organize suas demandas</p>
-        </motion.div>
+        </div>
         
         <motion.div variants={itemVariants} className="sidebar-section">
           <h3 className="section-title">VISÃO GERAL</h3>

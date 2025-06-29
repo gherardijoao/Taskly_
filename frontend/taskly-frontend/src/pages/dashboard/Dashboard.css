@@ -34,9 +34,10 @@ body {
 .dashboard-sidebar {
   width: 280px;
   min-width: 280px;
-  background-color: #000000;
+  background-color: #101010;
   border-right: 1px solid #1f1f1f;
   padding: 32px 24px;
+  padding-top: 48px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -51,7 +52,7 @@ body {
   font-weight: 600;
   font-size: 28px;
   letter-spacing: 20px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   color: #ffffff;
 }
 
@@ -59,7 +60,8 @@ body {
   font-size: 14px;
   color: #666666;
   font-weight: 400;
-  margin-left: 25px
+  margin-left: 25px;
+  line-height: 1.4;
 }
 
 .sidebar-section {
@@ -239,6 +241,7 @@ body {
   flex: 1;
   background-color: #101010;
   padding: 32px 40px;
+  padding-top: 48px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -250,6 +253,7 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 40px;
+  padding-top: 0;
 }
 
 .greeting-section {
@@ -259,14 +263,16 @@ body {
 .greeting {
   font-size: 32px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   letter-spacing: -0.5px;
+  line-height: 1.1;
 }
 
 .date-time {
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-top: 4px;
 }
 
 .date {
@@ -511,34 +517,220 @@ body {
   font-size: 14px;
 }
 
+/* Mobile Menu - definições principais */
+.mobile-menu-container {
+  display: none;
+}
+
+.mobile-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: 10px;
+  color: #ffffff;
+}
+
+.hamburger-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: transform 0.2s ease, color 0.2s ease;
+  border-radius: 4px;
+}
+
+.hamburger-button:hover {
+  color: #f0f0f0;
+}
+
+.hamburger-button:active {
+  transform: scale(0.9);
+}
+
+/* Efeito de rotação do ícone */
+.hamburger-button svg {
+  transition: transform 0.3s ease;
+}
+
+.hamburger-button.active svg {
+  transform: rotate(90deg);
+}
+
+/* Menu mobile - oculto por padrão */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 200px;
+  background-color: #101010;
+  border-right: 1px solid #1f1f1f;
+  border-bottom: 1px solid #1f1f1f;
+  border-radius: 0 0 4px 0;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Itens do menu */
+.mobile-menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.mobile-menu-item {
+  padding: 15px 20px;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.mobile-menu-item:hover {
+  background-color: #1a1a1a;
+}
+
+.mobile-menu-item span {
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.mobile-menu-item:last-child {
+  color: #f87171;
+}
+
+.mobile-menu-item:last-child span {
+  color: #f87171;
+}
+
 /* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-main {
+    padding: 24px 20px;
+  }
+  
+  .greeting {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-sidebar {
+    width: 240px;
+    min-width: 240px;
+    padding: 24px 16px;
+  }
+  
+  .logo-menu {
+    font-size: 24px;
+    letter-spacing: 16px;
+  }
+  
+  .sidebar-subtitle {
+    margin-left: 20px;
+  }
+  
+  .add-task-btn, .filter-btn {
+    padding: 10px 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard-container {
     flex-direction: column;
-    height: auto;
-    overflow: auto;
+    height: 100vh;
+    overflow: hidden;
   }
 
+  /* Sidebar oculta em mobile */
   .dashboard-sidebar {
-    width: 100%;
-    padding: 20px;
-    border-right: none;
-    border-bottom: 1px solid #1f1f1f;
+    display: none;
   }
-
+  
+  /* Header mobile com logo centralizado */
+  .mobile-menu-container {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: #101010;
+    padding: 16px 20px;
+    border-bottom: 1px solid #1f1f1f;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .mobile-logo {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .hamburger-button {
+    position: absolute;
+    left: 20px;
+    right: auto;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .hamburger-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .hamburger-button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(0.92);
+  }
+  
+  /* Menu mobile visível quando aberto */
+  .mobile-menu {
+    display: block;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .mobile-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  
+  /* Ajustes no conteúdo principal para mobile */
   .dashboard-main {
     padding: 20px;
+    padding-top: 80px;
+    height: 100vh;
+    overflow-y: auto;
   }
 
   .main-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
+    padding-top: 0;
   }
 
   .header-actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: space-between;
   }
 
   .greeting {
@@ -549,5 +741,41 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-main {
+    padding: 16px;
+    padding-top: 70px;
+  }
+  
+  .greeting {
+    font-size: 20px;
+  }
+  
+  .date-time {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .add-task-btn, .filter-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .search-input {
+    padding: 12px 20px 12px 40px;
+  }
+  
+  .task-item {
+    padding: 16px;
   }
 }
