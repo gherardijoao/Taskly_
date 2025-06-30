@@ -1,5 +1,17 @@
 # Taskly - Sistema de Gerenciamento de Tarefas
 
+<div align="center">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" />
+  <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" alt="Jest" />
+  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" alt="JWT" />
+</div>
+
 Sistema completo para gerenciamento de tarefas com interface web moderna e API REST robusta.
 
 ## Índice
@@ -172,21 +184,36 @@ VITE_API_URL=http://localhost:3000
 
 ## API e Endpoints
 
-### Autenticação
-- `POST /users` - Cadastro de usuário
-- `POST /login` - Login de usuário
+A API do Taskly segue princípios RESTful e utiliza autenticação JWT para proteger os endpoints. Todos os endpoints protegidos requerem o header `Authorization: Bearer <token>`.
 
-### Tarefas (requer autenticação)
-- `POST /tarefas` - Criar tarefa
-- `GET /tarefas` - Listar tarefas
-- `GET /tarefas/:id` - Buscar tarefa por ID
-- `PUT /tarefas/:id` - Atualizar tarefa
-- `DELETE /tarefas/:id` - Excluir tarefa
+###  Autenticação
 
-### Usuários (requer autenticação)
-- `GET /profile` - Obter perfil do usuário
-- `PUT /profile` - Atualizar perfil
-- `DELETE /profile` - Excluir conta
+| Método | Endpoint     | Descrição                                | Corpo da Requisição                      | Resposta                                 |
+|--------|--------------|------------------------------------------|------------------------------------------|------------------------------------------|
+| POST   | /login       | Autentica usuário e retorna token JWT    | `{ "email": "...", "senha": "..." }`     | `{ "token": "...", "user": {...} }`      |
+
+###  Tarefas
+
+| Método | Endpoint                   | Descrição                              | Corpo da Requisição / Parâmetros         | Resposta                                 |
+|--------|----------------------------|----------------------------------------|------------------------------------------|------------------------------------------|
+| POST   | /tarefas                   | Cria uma nova tarefa                   | `{ "nome": "...", "descricao": "..." }` | Objeto tarefa criada                     |
+| GET    | /tarefas                   | Lista todas as tarefas do usuário      | -                                        | Array de tarefas                         |
+| GET    | /tarefas/{id}              | Busca uma tarefa por ID                | `id` na URL                              | Objeto tarefa                            |
+| PUT    | /tarefas/{id}              | Atualiza uma tarefa                    | `id` na URL, dados no corpo              | Objeto tarefa atualizada                 |
+| DELETE | /tarefas/{id}              | Deleta uma tarefa                      | `id` na URL                              | Status 204 (No Content)                  |
+| GET    | /tarefas/categoria/{categoria} | Lista tarefas por categoria        | `categoria` na URL                       | Array de tarefas                         |
+| GET    | /tarefas/hoje              | Lista tarefas criadas hoje             | -                                        | Array de tarefas                         |
+| GET    | /tarefas/busca             | Busca tarefas por texto                | `?q=texto` na query string               | Array de tarefas                         |
+| GET    | /tarefas/resumo            | Obtém resumo estatístico das tarefas   | -                                        | Objeto com estatísticas                  |
+
+###  Usuários
+
+| Método | Endpoint     | Descrição                               | Corpo da Requisição                      | Resposta                                 |
+|--------|--------------|------------------------------------------|------------------------------------------|------------------------------------------|
+| POST   | /users       | Cria um novo usuário                    | `{ "nome": "...", "email": "..." }`     | Objeto usuário criado (sem senha)        |
+| GET    | /profile     | Retorna os dados do usuário logado      | -                                        | Objeto usuário (sem senha)               |
+| PUT    | /profile     | Atualiza os dados do usuário logado     | `{ "nome": "...", "email": "..." }`     | Objeto usuário atualizado                |
+| DELETE | /profile     | Exclui a conta do usuário logado        | -                                        | Status 204 (No Content)                  |
 
 ### Documentação da API
 Acesse a documentação interativa Swagger em:
@@ -201,41 +228,26 @@ http://localhost:3000/api-docs
 #### Estrutura de Testes
 - **Localização:** `backend/src/__tests__/`
 - **Organização:** Testes organizados por camada da aplicação
-  - `controllers/` - Testes de endpoints da API
-  - `services/` - Testes de lógica de negócio
-  - `middlewares/` - Testes de middlewares de autenticação
+  - `controllers/` - Testes unitários dos controladores
+  - `services/` - Testes de integração com banco de dados
+  - `middlewares/` - Testes do middleware de autenticação
 
 #### Tecnologias de Teste
-- **Jest** - Framework de testes unitários e de integração
-- **Supertest** - Biblioteca para testes de endpoints HTTP
+- **Jest** - Framework de testes
 - **SQLite** - Banco de dados em memória para testes isolados
 - **TypeORM** - Configuração específica para ambiente de teste
 
-#### Cobertura de Testes
-- **Cobertura Geral:** 38.51%
-- **Controllers:** 33.33% (AuthController: 90%, TaskController: 27.27%, UserController: 32.25%)
-- **Services:** 54.81% (AuthService: 100%, TaskService: 54.76%, UserService: 36.11%)
-- **Middlewares:** 100% (authMiddleware: 100%)
-- **Models:** 100% (Tarefa: 100%, Usuario: 100%)
-
 #### Tipos de Testes Implementados
+
 1. **Testes Unitários**
-   - Validação de entrada de dados
-   - Lógica de negócio dos services
-   - Criptografia de senhas
-   - Geração e validação de tokens JWT
+   - Controladores com mocks de Request, Response e serviços
+   - Middleware de autenticação com mocks de JWT
+   - Validação de entradas e respostas
 
 2. **Testes de Integração**
-   - Endpoints da API REST
-   - Interação com banco de dados
-   - Middlewares de autenticação
-   - Fluxos completos de CRUD
-
-3. **Testes de Validação**
-   - Campos obrigatórios
-   - Formato de dados
-   - Regras de negócio
-   - Tratamento de erros
+   - Serviços com banco de dados SQLite em memória
+   - Operações CRUD completas no banco de dados
+   - Validação de regras de negócio e relacionamentos
 
 #### Execução dos Testes
 ```bash
@@ -243,35 +255,6 @@ cd backend
 npm test
 ```
 
-**Comandos Adicionais:**
-- `npm test -- --coverage` - Executar com relatório de cobertura
-- `npm test -- --watch` - Modo watch para desenvolvimento
-- `npm test -- --verbose` - Saída detalhada dos testes
-
-#### Configuração de Teste
-- **Banco de Dados:** SQLite em memória para isolamento
-- **Variáveis de Ambiente:** Configuração específica para `NODE_ENV=test`
-- **Timeout:** Configurado para operações de banco de dados
-- **Cleanup:** Limpeza automática de dados entre testes
-
-## Scripts e Comandos
-
-### Backend
-```bash
-npm run dev          # Desenvolvimento com hot reload
-npm run build        # Compilar TypeScript
-npm start            # Executar em produção
-npm test             # Executar testes
-npm run typeorm      # Comandos do TypeORM
-npm run update-db    # Atualizar banco de dados
-```
-
-### Frontend
-```bash
-npm run dev          # Servidor de desenvolvimento
-npm run build        # Build para produção
-npm run preview      # Preview do build
-```
 
 ## Segurança
 
@@ -298,21 +281,10 @@ O fluxo de trabalho segue o modelo **gitflow**:
 - Branch principal: `main`
 - Branch de desenvolvimento: `develop`
 - Branches de features: `feature/nome-da-feature`
-- Branches de correção: `fix/nome-da-correção`
-- Branches de release e hotfix conforme necessário
 
-## Contribuição
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
 
 ## Autor
 
 **João Gherardi**
 
-## Licença
-
-Este projeto está sob a licença MIT.
