@@ -26,6 +26,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
       PORT: ${PORT}
       JWT_SECRET: ${JWT_SECRET}
     ports:
