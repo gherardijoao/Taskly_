@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" alt="JWT" />
 </div>
 
-Sistema completo para gerenciamento de tarefas com interface web moderna e API REST robusta.
+Sistema completo para gerenciamento de tarefas com interface web moderna e API REST robusta, incluindo validações avançadas e DTOs tipados.
 
 ## Índice
 
@@ -20,6 +20,7 @@ Sistema completo para gerenciamento de tarefas com interface web moderna e API R
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Arquitetura do Sistema](#arquitetura-do-sistema)
+- [Validações e DTOs](#validações-e-dtos)
 - [Instalação e Configuração](#instalação-e-configuração)
 - [Execução do Projeto](#execução-do-projeto)
 - [Configuração de Ambiente](#configuração-de-ambiente)
@@ -38,7 +39,9 @@ Taskly é uma aplicação full-stack que permite aos usuários gerenciar suas ta
 ## Funcionalidades
 
 ### Autenticação e Usuários
-- Cadastro de usuários com validação de email único
+- Cadastro de usuários com validação robusta de dados
+- Validação de email com regex e normalização automática
+- Validação de senha com requisitos de segurança
 - Login seguro com JWT (JSON Web Token)
 - Perfil de usuário com dados editáveis
 - Logout automático com expiração de token
@@ -64,6 +67,34 @@ Taskly é uma aplicação full-stack que permite aos usuários gerenciar suas ta
 - Estatísticas de produtividade
 - Ordenação por data de criação
 - Filtros por período (hoje, todas, pendentes, concluídas)
+
+### Consultor de Tarefas com IA
+- **Consultor inteligente** que fornece dicas personalizadas para completar tarefas
+- **Integração com Google Gemini AI** para gerar conselhos práticos e motivacionais
+- **Interface flutuante** no canto inferior direito da tela
+- **Personalização** por categoria e preferências do usuário
+- **Dicas em tempo real** baseadas no contexto da tarefa
+
+**Como usar o Consultor:**
+1. Clique no botão ⚡ no canto inferior direito
+2. Descreva o contexto da tarefa que deseja completar
+3. Clique em "Gerar Conselhos"
+4. Receba dicas práticas e um resumo motivacional personalizado
+
+**Configuração da IA:**
+Para usar o consultor de tarefas, você precisa configurar a chave da API Gemini:
+
+1. Obtenha uma chave gratuita em: https://makersuite.google.com/app/apikey
+2. Crie um arquivo `.env` no diretório `frontend/taskly-frontend/`
+3. Adicione a variável:
+   ```bash
+   VITE_GEMINI_API_KEY=sua_chave_da_api_gemini_aqui
+   ```
+4. Reinicie o servidor de desenvolvimento do frontend
+
+**Exemplo de uso:**
+- **Contexto:** "Preciso estudar para uma prova de matemática"
+- **Resultado:** Dicas como "Divida o conteúdo em blocos de 25 minutos", "Use a técnica Pomodoro", etc.
 
 ## Tecnologias Utilizadas
 
@@ -100,7 +131,7 @@ taskly/
 ├── backend/                 # API REST
 │   ├── src/
 │   │   ├── controllers/     # Controladores da API
-│   │   ├── services/        # Lógica de negócio
+│   │   ├── services/        # Lógica de negócio e DTOs
 │   │   ├── models/          # Entidades do banco
 │   │   ├── routes/          # Definição de rotas
 │   │   ├── middlewares/     # Middlewares (auth, etc.)
@@ -118,6 +149,102 @@ taskly/
 │       ├── package.json
 │       └── README.md
 └── README.md
+```
+
+## Validações e DTOs
+
+O sistema implementa validações robustas usando DTOs (Data Transfer Objects) tipados para garantir a integridade e segurança dos dados.
+
+### DTOs de Usuário
+
+#### CreateUserDTO
+```typescript
+interface CreateUserDTO {
+  nome: string;      // Mínimo 2 caracteres, sem espaços extras
+  email: string;     // Formato válido, normalizado para lowercase
+  senha: string;     // Mínimo 6 chars, 1 letra + 1 número
+}
+```
+
+#### UpdateUserDTO
+```typescript
+interface UpdateUserDTO {
+  nome?: string;     // Opcional, mesma validação do CreateUserDTO
+  email?: string;    // Opcional, verificação de duplicatas
+  senha?: string;    // Opcional, mesma validação do CreateUserDTO
+}
+```
+
+### DTOs de Tarefa
+
+#### CreateTarefaDTO
+```typescript
+interface CreateTarefaDTO {
+  nome: string;                    // Obrigatório, máximo 255 chars
+  descricao?: string;              // Opcional
+  status?: 'pendente' | 'concluída'; // Padrão: 'pendente'
+  categoria?: string;              // Opcional
+  dataCumprimento?: Date;          // Opcional, automático se concluída
+}
+```
+
+#### UpdateTarefaDTO
+```typescript
+interface UpdateTarefaDTO {
+  nome?: string;                   // Opcional, mesma validação
+  descricao?: string;              // Opcional
+  status?: 'pendente' | 'concluída'; // Opcional
+  categoria?: string;              // Opcional
+  dataCumprimento?: Date;          // Opcional
+}
+```
+
+### Validações Implementadas
+
+#### Email
+- ✅ **Regex robusto**: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
+- ✅ **Normalização**: Conversão para lowercase
+- ✅ **Sanitização**: Remoção de espaços em branco
+- ✅ **Unicidade**: Verificação de duplicatas no banco
+
+#### Senha
+- ✅ **Comprimento mínimo**: 6 caracteres
+- ✅ **Complexidade**: Pelo menos uma letra e um número
+- ✅ **Criptografia**: Hash seguro com bcrypt (salt rounds: 10)
+
+#### Nome
+- ✅ **Comprimento mínimo**: 2 caracteres
+- ✅ **Sanitização**: Remoção de espaços em branco
+- ✅ **Validação**: Não pode ser apenas espaços
+
+#### Tarefas
+- ✅ **Nome obrigatório**: Não pode ser vazio ou muito longo
+- ✅ **Status válido**: Apenas 'pendente' ou 'concluída'
+- ✅ **Data automática**: Definida automaticamente ao marcar como concluída
+
+### Exemplos de Validação
+
+```typescript
+// ✅ Válido
+{
+  nome: "João Silva",
+  email: "joao@email.com",
+  senha: "senha123"
+}
+
+// ❌ Inválido - Email mal formatado
+{
+  nome: "João",
+  email: "email-invalido",
+  senha: "senha123"
+}
+
+// ❌ Inválido - Senha fraca
+{
+  nome: "João Silva", 
+  email: "joao@email.com",
+  senha: "123"
+}
 ```
 
 ## Instalação e Configuração
@@ -178,21 +305,22 @@ cp .env.example .env
 Configure as seguintes variáveis no arquivo `.env`:
 ```
 VITE_API_URL=http://localhost:3000
+VITE_GEMINI_API_KEY=sua_chave_da_api_gemini_aqui
 ```
 
-**Nota:** Se o backend estiver rodando em uma porta diferente ou em um servidor remoto, ajuste a URL da API conforme necessário.
+**Nota:** Se o backend estiver rodando em uma porta diferente ou em um servidor remoto, ajuste a URL da API conforme necessário. A chave da API Gemini é necessária apenas se você quiser usar o consultor de tarefas com IA.
 
 ## API e Endpoints
 
 A API do Taskly segue princípios RESTful e utiliza autenticação JWT para proteger os endpoints. Todos os endpoints protegidos requerem o header `Authorization: Bearer <token>`.
 
-###  Autenticação
+### Autenticação
 
 | Método | Endpoint     | Descrição                                | Corpo da Requisição                      | Resposta                                 |
 |--------|--------------|------------------------------------------|------------------------------------------|------------------------------------------|
 | POST   | /login       | Autentica usuário e retorna token JWT    | `{ "email": "...", "senha": "..." }`     | `{ "token": "...", "user": {...} }`      |
 
-###  Tarefas
+### Tarefas
 
 | Método | Endpoint                   | Descrição                              | Corpo da Requisição / Parâmetros         | Resposta                                 |
 |--------|----------------------------|----------------------------------------|------------------------------------------|------------------------------------------|
@@ -206,7 +334,7 @@ A API do Taskly segue princípios RESTful e utiliza autenticação JWT para prot
 | GET    | /tarefas/busca             | Busca tarefas por texto                | `?q=texto` na query string               | Array de tarefas                         |
 | GET    | /tarefas/resumo            | Obtém resumo estatístico das tarefas   | -                                        | Objeto com estatísticas                  |
 
-###  Usuários
+### Usuários
 
 | Método | Endpoint     | Descrição                               | Corpo da Requisição                      | Resposta                                 |
 |--------|--------------|------------------------------------------|------------------------------------------|------------------------------------------|
@@ -248,6 +376,7 @@ http://localhost:3000/api-docs
    - Serviços com banco de dados SQLite em memória
    - Operações CRUD completas no banco de dados
    - Validação de regras de negócio e relacionamentos
+   - **Testes de validação de DTOs** - Verificação de todas as regras de validação
 
 #### Execução dos Testes
 ```bash
@@ -255,21 +384,22 @@ cd backend
 npm test
 ```
 
+#### Cobertura de Testes
+- ✅ **56 testes passando** em 8 suites
+- ✅ **Cobertura de validações** - Todos os DTOs testados
+- ✅ **Testes de edge cases** - Emails inválidos, senhas fracas, etc.
 
 ## Segurança
 
 - Autenticação JWT obrigatória em rotas protegidas
-- Senhas criptografadas com bcrypt
-- Validação e sanitização de dados
+- Senhas criptografadas com bcrypt (salt rounds: 10)
+- Validação e sanitização robusta de dados
+- DTOs tipados para prevenir injeção de dados maliciosos
 - Isolamento de dados por usuário
 - Tokens com expiração automática
+- Normalização de dados (email lowercase, trim de espaços)
+- **Helmet.js** - Headers de segurança HTTP (CSP, XSS Protection, HSTS, etc.)
 
-## Responsividade
-
-A aplicação é totalmente responsiva e funciona em:
-- Desktop (1200px+)
-- Tablet (768px - 1199px)
-- Mobile (320px - 767px)
 
 ## Convenções e Padrões
 
@@ -281,8 +411,6 @@ O fluxo de trabalho segue o modelo **gitflow**:
 - Branch principal: `main`
 - Branch de desenvolvimento: `develop`
 - Branches de features: `feature/nome-da-feature`
-
-
 
 ## Autor
 

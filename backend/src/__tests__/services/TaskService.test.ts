@@ -1,5 +1,5 @@
 import { TarefaService, CreateTarefaDTO, UpdateTarefaDTO } from '../../services/TaskService';
-import { UserService } from '../../services/UserService';
+import { UserService, CreateUserDTO } from '../../services/UserService';
 import { initializeTestDataSource, closeTestDataSource, clearDatabase, TestDataSource } from '../../database/data-source.test';
 import { Tarefa } from '../../models/Tarefa';
 import { Usuario } from '../../models/Usuario';
@@ -28,7 +28,15 @@ describe('TarefaService', () => {
     await clearDatabase();
     
     // Criar um usuário para os testes
-    const user = await userService.createUser('Usuário Teste', 'usuario.teste@example.com', 'senha123');
+    const userService = new UserService();
+    (userService as any).userRepository = TestDataSource.getRepository(Usuario);
+    
+    const userData: CreateUserDTO = {
+      nome: 'Usuário Teste',
+      email: 'usuario.teste@example.com',
+      senha: 'senha123'
+    };
+    const user = await userService.createUser(userData);
     userId = user.id;
   });
 
@@ -100,6 +108,76 @@ describe('TarefaService', () => {
       await expect(tarefaService.createTarefa('id-inexistente', tarefaData))
         .rejects.toThrow('Usuário não encontrado');
     });
+
+    it('deve criar tarefa com dados mínimos', async () => {
+      const tarefaData: CreateTarefaDTO = {
+        nome: 'Tarefa Teste'
+      };
+
+      const tarefa = await tarefaService.createTarefa(userId, tarefaData);
+
+      expect(tarefa).toBeDefined();
+      expect(tarefa.id).toBeDefined();
+      expect(tarefa.nome).toBe('Tarefa Teste');
+      expect(tarefa.status).toBe('pendente');
+      expect(tarefa.idUsuario).toBe(userId);
+    });
+
+    it('deve criar tarefa com todos os dados', async () => {
+      const tarefaData: CreateTarefaDTO = {
+        nome: 'Tarefa Completa',
+        descricao: 'Descrição da tarefa',
+        status: 'pendente',
+        categoria: 'Trabalho',
+        dataCumprimento: new Date('2024-12-31')
+      };
+
+      const tarefa = await tarefaService.createTarefa(userId, tarefaData);
+
+      expect(tarefa.nome).toBe('Tarefa Completa');
+      expect(tarefa.descricao).toBe('Descrição da tarefa');
+      expect(tarefa.status).toBe('pendente');
+      expect(tarefa.categoria).toBe('Trabalho');
+      expect(tarefa.dataCumprimento).toEqual(new Date('2024-12-31'));
+    });
+
+    it('deve criar tarefa concluída com data automática', async () => {
+      const tarefaData: CreateTarefaDTO = {
+        nome: 'Tarefa Concluída',
+        status: 'concluída'
+      };
+
+      const tarefa = await tarefaService.createTarefa(userId, tarefaData);
+
+      expect(tarefa.status).toBe('concluída');
+      expect(tarefa.dataCumprimento).toBeDefined();
+      expect(tarefa.dataCumprimento).toBeInstanceOf(Date);
+    });
+
+    it('deve lançar erro para nome vazio', async () => {
+      const tarefaData = {
+        nome: ''
+      } as CreateTarefaDTO;
+
+      await expect(tarefaService.createTarefa(userId, tarefaData)).rejects.toThrow('Nome da tarefa é obrigatório');
+    });
+
+    it('deve lançar erro para nome muito longo', async () => {
+      const tarefaData: CreateTarefaDTO = {
+        nome: 'a'.repeat(256)
+      };
+
+      await expect(tarefaService.createTarefa(userId, tarefaData)).rejects.toThrow('Nome da tarefa não pode ter mais de 255 caracteres');
+    });
+
+    it('deve lançar erro para status inválido', async () => {
+      const tarefaData = {
+        nome: 'Tarefa Teste',
+        status: 'invalido'
+      } as any;
+
+      await expect(tarefaService.createTarefa(userId, tarefaData)).rejects.toThrow('Status deve ser "pendente" ou "concluída"');
+    });
   });
 
   describe('getTarefasByUser', () => {
@@ -144,7 +222,15 @@ describe('TarefaService', () => {
 
     it('deve lançar erro quando tarefa pertence a outro usuário', async () => {
       // Criar outro usuário
-      const outroUser = await userService.createUser('Outro Usuário', 'outro@example.com', 'senha123');
+      const userService = new UserService();
+      (userService as any).userRepository = TestDataSource.getRepository(Usuario);
+      
+      const outroUserData: CreateUserDTO = {
+        nome: 'Outro Usuário',
+        email: 'outro@example.com',
+        senha: 'senha123'
+      };
+      const outroUser = await userService.createUser(outroUserData);
       
       // Criar tarefa para o outro usuário
       const tarefa = await tarefaService.createTarefa(outroUser.id, { nome: 'Tarefa do Outro' });
@@ -200,6 +286,26 @@ describe('TarefaService', () => {
       
       await expect(tarefaService.updateTarefa(tarefa.id, userId, { nome: '' }))
         .rejects.toThrow('Nome da tarefa é obrigatório');
+    });
+
+    it('deve atualizar tarefa com sucesso', async () => {
+      const tarefaData: CreateTarefaDTO = {
+        nome: 'Tarefa Original'
+      };
+      const tarefa = await tarefaService.createTarefa(userId, tarefaData);
+
+      const updateData: UpdateTarefaDTO = {
+        nome: 'Tarefa Atualizada',
+        descricao: 'Nova descrição',
+        status: 'concluída'
+      };
+
+      const updatedTarefa = await tarefaService.updateTarefa(tarefa.id, userId, updateData);
+
+      expect(updatedTarefa.nome).toBe('Tarefa Atualizada');
+      expect(updatedTarefa.descricao).toBe('Nova descrição');
+      expect(updatedTarefa.status).toBe('concluída');
+      expect(updatedTarefa.dataCumprimento).toBeDefined();
     });
   });
 
@@ -257,6 +363,28 @@ describe('TarefaService', () => {
     it('deve retornar array vazio quando não há tarefas com o status', async () => {
       const tarefas = await tarefaService.getTarefasByStatus(userId, 'concluída');
       expect(tarefas).toEqual([]);
+    });
+  });
+
+  describe('criarTarefaParaOutroUsuario', () => {
+    it('deve criar tarefa para outro usuário', async () => {
+      const userService = new UserService();
+      (userService as any).userRepository = TestDataSource.getRepository(Usuario);
+      
+      const outroUserData: CreateUserDTO = {
+        nome: 'Outro Usuário',
+        email: 'outro@example.com',
+        senha: 'senha123'
+      };
+      const outroUser = await userService.createUser(outroUserData);
+
+      const tarefaData: CreateTarefaDTO = {
+        nome: 'Tarefa do Outro Usuário'
+      };
+      const tarefa = await tarefaService.createTarefa(outroUser.id, tarefaData);
+
+      expect(tarefa.idUsuario).toBe(outroUser.id);
+      expect(tarefa.nomeUsuario).toBe('Outro Usuário');
     });
   });
 }); 

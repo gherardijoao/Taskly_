@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserService } from '../services/UserService';
+import { UserService, CreateUserDTO, UpdateUserDTO } from '../services/UserService';
 
 export class UserController {
   private userService: UserService;
@@ -10,11 +10,18 @@ export class UserController {
 
   async create(req: Request, res: Response) {
     const { nome, email, senha } = req.body;
+    
+    // Validação básica de campos obrigatórios
     if (!nome || !email || !senha) {
-      return res.status(400).json({ error: 'Nome, email e senha são obrigatórios.' });
+      return res.status(400).json({ 
+        error: 'Nome, email e senha são obrigatórios.' 
+      });
     }
+
     try {
-      const user = await this.userService.createUser(nome, email, senha);
+      const userData: CreateUserDTO = { nome, email, senha };
+      const user = await this.userService.createUser(userData);
+      
       // Não retornar senha!
       const { senha: _, ...userSafe } = user;
       return res.status(201).json(userSafe);
@@ -30,10 +37,17 @@ export class UserController {
       
       // Verifica se pelo menos um campo foi fornecido
       if (!nome && !email && !senha) {
-        return res.status(400).json({ error: 'Pelo menos um campo deve ser fornecido para atualização.' });
+        return res.status(400).json({ 
+          error: 'Pelo menos um campo deve ser fornecido para atualização.' 
+        });
       }
       
-      const updatedUser = await this.userService.updateUser(userId, { nome, email, senha });
+      const updateData: UpdateUserDTO = {};
+      if (nome !== undefined) updateData.nome = nome;
+      if (email !== undefined) updateData.email = email;
+      if (senha !== undefined) updateData.senha = senha;
+      
+      const updatedUser = await this.userService.updateUser(userId, updateData);
       
       // Não retornar senha!
       const { senha: _, ...userSafe } = updatedUser;

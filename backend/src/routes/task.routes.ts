@@ -360,61 +360,12 @@
  *         description: Token não fornecido ou inválido
  */
 
-/**
- * @openapi
- * /tarefas/sugestao:
- *   get:
- *     summary: Gera dicas e orientações para completar uma tarefa usando IA
- *     tags:
- *       - Tarefas
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: context
- *         schema:
- *           type: string
- *         description: Contexto da tarefa para receber dicas
- *       - in: query
- *         name: categoria
- *         schema:
- *           type: string
- *         description: Categoria da tarefa (opcional)
- *       - in: query
- *         name: preferencias
- *         schema:
- *           type: string
- *         description: Preferências do usuário para tipos de dicas (opcional)
- *     responses:
- *       200:
- *         description: Dicas e resumo gerados com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 dicas:
- *                   type: array
- *                   items:
- *                     type: string
- *                   description: Lista de dicas práticas para completar a tarefa
- *                 resumo:
- *                   type: string
- *                   description: Resumo motivacional ou estratégico para a tarefa
- *       401:
- *         description: Token não fornecido ou inválido
- *       500:
- *         description: Erro ao gerar dicas para a tarefa
- */
-
 import { Router } from 'express';
 import { TarefaController } from '../controllers/TaskController';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { SuggestionController } from '../controllers/SuggestionController';
 
 const router = Router();
 const tarefaController = new TarefaController();
-const suggestionController = new SuggestionController();
 
 router.post('/tarefas', authMiddleware, async (req, res) => {
   await tarefaController.create(req, res);
@@ -438,10 +389,6 @@ router.get('/tarefas/resumo', authMiddleware, async (req, res) => {
 
 router.get('/tarefas/categoria/:categoria', authMiddleware, async (req, res) => {
   await tarefaController.getTarefasByCategoria(req, res);
-});
-
-router.get('/tarefas/sugestao', authMiddleware, async (req, res) => {
-  await suggestionController.sugerirTarefa(req, res);
 });
 
 router.get('/tarefas/:id', authMiddleware, async (req, res) => {

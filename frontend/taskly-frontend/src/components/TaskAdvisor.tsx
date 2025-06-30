@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import { FiMessageSquare, FiX, FiZap } from 'react-icons/fi';
-import suggestionService from '../services/suggestion.service';
+import { TaskAdvisorService } from '../services/task-advisor.service';
+import type { TaskSuggestion } from '../services/task-advisor.service';
 import './TaskAdvisor.css';
-
-interface TaskSuggestion {
-  dicas: string[];
-  resumo: string;
-}
 
 const TaskAdvisor: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [context, setContext] = useState('');
-  const [categoria, setCategoria] = useState('');
-  const [preferencias, setPreferencias] = useState('');
   const [suggestion, setSuggestion] = useState<TaskSuggestion | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,8 +20,6 @@ const TaskAdvisor: React.FC = () => {
   const handleClose = () => {
     setIsOpen(false);
     setContext('');
-    setCategoria('');
-    setPreferencias('');
     setSuggestion(null);
     setError('');
   };
@@ -45,15 +37,10 @@ const TaskAdvisor: React.FC = () => {
     setSuggestion(null);
 
     try {
-      const result = await suggestionService.getSuggestion({
-        context: context.trim(),
-        categoria: categoria.trim() || undefined,
-        preferencias: preferencias.trim() || undefined
-      });
-
+      const result = await TaskAdvisorService.generateAdvice(context.trim());
       setSuggestion(result);
     } catch (err: any) {
-      setError(err.message || 'Erro ao gerar sugestão. Tente novamente.');
+      setError(err.message || 'Erro ao gerar conselhos. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -97,35 +84,6 @@ const TaskAdvisor: React.FC = () => {
                   />
                 </div>
 
-                <div className="task-advisor-form-group">
-                  <label htmlFor="categoria">Categoria (opcional)</label>
-                  <select
-                    id="categoria"
-                    value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                  >
-                    <option value="">Qualquer categoria</option>
-                    <option value="Trabalho">Trabalho</option>
-                    <option value="Estudos">Estudos</option>
-                    <option value="Pessoal">Pessoal</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Financeiro">Financeiro</option>
-                    <option value="Casa">Casa</option>
-                    <option value="Lazer">Lazer</option>
-                  </select>
-                </div>
-
-                <div className="task-advisor-form-group">
-                  <label htmlFor="preferencias">Preferências (opcional)</label>
-                  <input
-                    id="preferencias"
-                    type="text"
-                    value={preferencias}
-                    onChange={(e) => setPreferencias(e.target.value)}
-                    placeholder="Ex: dicas rápidas, foco em motivação, sugestões para procrastinação..."
-                  />
-                </div>
-
                 {error && <div className="task-advisor-error">{error}</div>}
 
                 <div className="task-advisor-actions">
@@ -148,7 +106,7 @@ const TaskAdvisor: React.FC = () => {
 
               {isLoading && (
                 <div className="task-advisor-loading">
-                  Gerando sugestão personalizada...
+                  Gerando conselhos personalizados...
                 </div>
               )}
 
