@@ -17,6 +17,7 @@
   align-items: center;
   margin-bottom: 30px;
   position: relative;
+  min-height: 60px;
 }
 
 .profile-header h1 {
@@ -27,6 +28,7 @@
   color: #ffffff;
   margin: 0;
   z-index: 1;
+  padding: 0 60px;
 }
 
 .back-button {
@@ -48,6 +50,7 @@
   width: auto !important;
   margin: 0 !important;
   box-shadow: none !important;
+  min-width: 80px;
 }
 
 .back-button:hover {
@@ -273,13 +276,142 @@
 }
 
 /* Responsividade */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 30px 20px;
+    max-width: 100%;
+    padding-top: 80px;
+  }
+  
+  .profile-header {
+    margin-bottom: 25px;
+    min-height: 50px;
+  }
+  
+  .profile-header h1 {
+    font-size: 26px;
+    padding: 0;
+  }
+  
+  .back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 13px;
+    padding: 8px 12px;
+    min-width: 70px;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+  }
+  
+  .profile-card {
+    padding: 25px;
+    margin-bottom: 25px;
+  }
+  
+  .profile-avatar {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 18px;
+  }
+  
+  .profile-info {
+    margin-top: 18px;
+  }
+  
+  .info-group {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+  }
+  
+  .info-group label {
+    font-size: 13px;
+  }
+  
+  .info-group p {
+    font-size: 15px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+    align-items: center;
+  }
+  
+  .edit-button, .save-button, .cancel-button, .delete-button {
+    width: 100%;
+    max-width: 280px;
+    min-width: auto;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .form-group {
+    margin-bottom: 18px;
+  }
+  
+  .form-group label {
+    font-size: 13px;
+  }
+  
+  .form-group input {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+  
+  .password-section {
+    margin-top: 25px;
+    padding-top: 12px;
+  }
+  
+  .password-section h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  
+  .delete-confirmation {
+    padding: 25px;
+  }
+  
+  .delete-warning h3 {
+    font-size: 17px;
+  }
+  
+  .delete-confirmation p {
+    margin-bottom: 20px;
+  }
+  
+  .confirmation-input input {
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 600px) {
   .profile-container {
     padding: 20px 15px;
+    padding-top: 70px;
+  }
+  
+  .profile-header {
+    margin-bottom: 20px;
+    min-height: 45px;
   }
   
   .profile-header h1 {
     font-size: 24px;
+    padding: 0;
+  }
+  
+  .back-button {
+    top: 15px;
+    left: 15px;
+    font-size: 12px;
+    padding: 6px 10px;
+    min-width: 65px;
   }
   
   .profile-card {
@@ -295,5 +427,251 @@
   .edit-button, .save-button, .cancel-button, .delete-button {
     width: 100%;
     max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 15px 12px;
+    padding-top: 65px;
+  }
+  
+  .profile-header {
+    margin-bottom: 20px;
+    min-height: 40px;
+  }
+  
+  .profile-header h1 {
+    font-size: 22px;
+    padding: 0;
+  }
+  
+  .back-button {
+    top: 12px;
+    left: 12px;
+    font-size: 12px;
+    padding: 5px 8px;
+    min-width: 60px;
+  }
+  
+  .profile-card {
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
+  
+  .profile-info {
+    margin-top: 15px;
+  }
+  
+  .info-group {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+  
+  .info-group label {
+    font-size: 12px;
+  }
+  
+  .info-group p {
+    font-size: 14px;
+  }
+  
+  .button-group {
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .edit-button, .save-button, .cancel-button, .delete-button {
+    max-width: 260px;
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .password-section {
+    margin-top: 20px;
+    padding-top: 10px;
+  }
+  
+  .password-section h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .delete-confirmation {
+    padding: 20px;
+  }
+  
+  .delete-warning h3 {
+    font-size: 16px;
+  }
+  
+  .delete-confirmation p {
+    margin-bottom: 18px;
+    font-size: 14px;
+  }
+  
+  .confirmation-input input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .profile-container {
+    padding: 12px 10px;
+    padding-top: 60px;
+  }
+  
+  .profile-header {
+    margin-bottom: 18px;
+    min-height: 35px;
+  }
+  
+  .profile-header h1 {
+    font-size: 20px;
+    padding: 0;
+  }
+  
+  .back-button {
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    padding: 4px 6px;
+    min-width: 55px;
+  }
+  
+  .profile-card {
+    padding: 15px;
+    margin-bottom: 18px;
+  }
+  
+  .profile-avatar {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 12px;
+  }
+  
+  .profile-info {
+    margin-top: 12px;
+  }
+  
+  .info-group {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  
+  .info-group label {
+    font-size: 11px;
+  }
+  
+  .info-group p {
+    font-size: 13px;
+  }
+  
+  .button-group {
+    gap: 8px;
+    margin-top: 18px;
+  }
+  
+  .edit-button, .save-button, .cancel-button, .delete-button {
+    max-width: 240px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    font-size: 11px;
+  }
+  
+  .form-group input {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  .password-section {
+    margin-top: 18px;
+    padding-top: 8px;
+  }
+  
+  .password-section h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  
+  .delete-confirmation {
+    padding: 18px;
+  }
+  
+  .delete-warning h3 {
+    font-size: 15px;
+  }
+  
+  .delete-confirmation p {
+    margin-bottom: 15px;
+    font-size: 13px;
+  }
+  
+  .confirmation-input input {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Melhorias para orientação landscape em dispositivos móveis */
+@media (max-width: 768px) and (orientation: landscape) {
+  .profile-container {
+    padding: 20px 15px;
+    padding-top: 70px;
+  }
+  
+  .profile-header {
+    min-height: 45px;
+  }
+  
+  .profile-header h1 {
+    padding: 0;
+  }
+  
+  .back-button {
+    top: 15px;
+    left: 15px;
+  }
+  
+  .profile-card {
+    padding: 20px;
+  }
+  
+  .button-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .edit-button, .save-button, .cancel-button, .delete-button {
+    max-width: 200px;
+    min-width: 160px;
   }
 } 

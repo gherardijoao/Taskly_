@@ -809,6 +809,60 @@ body {
     align-items: flex-start;
     gap: 8px;
   }
+
+  /* Melhorias na lista de tarefas para mobile */
+  .task-list {
+    gap: 16px;
+    margin-top: 20px;
+    padding-bottom: 60px;
+  }
+
+  .task-item {
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 80px;
+  }
+
+  .task-checkbox {
+    width: 28px;
+    height: 28px;
+    margin-right: 16px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .task-content {
+    gap: 6px;
+  }
+
+  .task-title {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .task-date {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .task-tag {
+    padding: 6px 14px;
+    font-size: 12px;
+    margin-left: 12px;
+  }
+
+  .search-container {
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    padding: 16px 20px 16px 48px;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -839,11 +893,142 @@ body {
   }
   
   .search-input {
-    padding: 12px 20px 12px 40px;
+    padding: 14px 20px 14px 44px;
+    font-size: 16px;
+  }
+  
+  .task-list {
+    gap: 14px;
+    margin-top: 16px;
+    padding-bottom: 50px;
+  }
+  
+  .task-item {
+    padding: 18px;
+    min-height: 76px;
+  }
+
+  .task-checkbox {
+    width: 26px;
+    height: 26px;
+    margin-right: 14px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .task-title {
+    font-size: 15px;
+  }
+
+  .task-date {
+    font-size: 12px;
+  }
+
+  .task-tag {
+    padding: 5px 12px;
+    font-size: 11px;
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-main {
+    padding: 12px;
+    padding-top: 70px;
+  }
+
+  .task-list {
+    gap: 12px;
+    margin-top: 12px;
+    padding-bottom: 40px;
   }
   
   .task-item {
     padding: 16px;
+    min-height: 72px;
+  }
+
+  .task-checkbox {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .task-content {
+    gap: 4px;
+  }
+
+  .task-title {
+    font-size: 14px;
+  }
+
+  .task-date {
+    font-size: 11px;
+  }
+
+  .task-tag {
+    padding: 4px 10px;
+    font-size: 10px;
+    margin-left: 8px;
+  }
+
+  .search-input {
+    padding: 12px 18px 12px 40px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-main {
+    padding: 10px;
+    padding-top: 70px;
+  }
+
+  .task-list {
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 30px;
+  }
+  
+  .task-item {
+    padding: 14px;
+    min-height: 68px;
+  }
+
+  .task-checkbox {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .task-title {
+    font-size: 13px;
+  }
+
+  .task-date {
+    font-size: 10px;
+  }
+
+  .task-tag {
+    padding: 3px 8px;
+    font-size: 9px;
+    margin-left: 6px;
   }
 }
 

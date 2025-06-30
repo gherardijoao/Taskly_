@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiSearch, FiPlus, FiFilter, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiSettings, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
+import { FiSearch, FiPlus, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import './Dashboard.css';
 import { taskService } from '../../services/task.service';
 import { authService } from '../../services/auth.service';
-import type { Task as ApiTask } from '../../types/task.types';
 import AddTaskModal from '../../components/AddTaskModal';
 import TaskDetailModal from '../../components/TaskDetailModal';
 
