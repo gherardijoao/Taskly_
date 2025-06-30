@@ -1,0 +1,1061 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #101010;
+  color: #ffffff;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dashboard-loading {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #101010;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background-color: #000000;
+  border-right: 1px solid #1f1f1f;
+  padding: 32px 24px;
+  padding-top: 32px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.sidebar-header {
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.logo-menu {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 16px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: #666666;
+  font-weight: 400;
+  margin-left: 20px;
+  line-height: 1.4;
+}
+
+.sidebar-sections-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar-section {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.add-group-btn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: #666666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.add-group-btn:hover {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.sidebar-menu {
+  list-style: none;
+  max-height: calc(100vh - 500px);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+}
+
+.menu-item-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  color: #666666;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.menu-item.active {
+  background-color: #1a1a1a;
+  border-left: 3px solid #666666;
+  padding-left: 13px;
+}
+
+.menu-item.active .menu-icon {
+  color: #aaaaaa;
+}
+
+.menu-item.active span {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Menu Item with underline animation */
+.menu-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+/* Remover a animação de underline para todos os itens */
+.menu-item-content::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -4px;
+  left: 0;
+  background-color: #ffffff;
+  transition: width 0.3s ease;
+}
+
+/* Aplicar a animação de underline apenas para o item ativo */
+.menu-item.active .menu-item-content::after {
+  width: 100%;
+}
+
+/* Aplicar a animação de underline no hover apenas se não for o item ativo */
+.menu-item:hover:not(.active) .menu-item-content::after {
+  width: 50%;
+}
+
+.menu-icon {
+  width: 16px;
+  height: 16px;
+  color: #666666;
+  transition: all 0.2s ease;
+}
+
+.menu-item span {
+  font-size: 14px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.task-count {
+  background-color: #1a1a1a;
+  color: #666666;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Progress Section */
+.progress-section {
+  flex-shrink: 0;
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #0a0a0a;
+  border-radius: 12px;
+  border: 1px solid #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progress-header span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.progress-percentage {
+  color: #ffffff;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #1a1a1a;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 11px;
+  color: #666666;
+}
+
+/* User Profile Section */
+.user-profile-section {
+  margin-top: auto;
+  margin-bottom: 16px;
+}
+
+.user-profile-section .menu-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.user-profile-section .menu-item:last-child:hover {
+  background-color: rgba(245, 101, 101, 0.15);
+}
+
+.user-profile-section .menu-item:last-child:hover span,
+.user-profile-section .menu-item:last-child:hover .menu-icon {
+  color: #f87171;
+}
+
+/* Removendo o underline do botão de Sair */
+.user-profile-section .menu-item:last-child .menu-item-content::after {
+  display: none;
+}
+
+/* Main Content */
+.dashboard-main {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #101010;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Header */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  padding-top: 0;
+}
+
+.greeting-section {
+  flex: 1;
+}
+
+.greeting {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.date-time {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.date {
+  font-size: 14px;
+  color: #666666;
+}
+
+.time {
+  font-size: 14px;
+  color: #ffffff;
+  background-color: #0a0a0a;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid #1a1a1a;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
+.add-task-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  color: #101010;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.add-task-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Tasks Section */
+.tasks-section {
+  margin-top: 40px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tasks-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tasks-title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.tasks-count {
+  font-size: 14px;
+  color: #666666;
+  background-color: #0a0a0a;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid #1a1a1a;
+}
+
+/* Search */
+.search-container {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 20px 16px 48px;
+  background-color: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #333333;
+  background-color: #1a1a1a;
+}
+
+.search-input::placeholder {
+  color: #666666;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666666;
+  width: 16px;
+  height: 16px;
+}
+
+/* Task List */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+  width: 100%;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #0a0a0a;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  border: 1px solid #2a2a2a;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.task-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #333 0%, #555 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.task-item:hover {
+  background-color: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  box-shadow: none;
+}
+
+.task-item:hover::after {
+  transform: scaleX(1);
+}
+
+.task-item.completed {
+  background-color: rgba(10, 10, 10, 0.5);
+  border-color: #1a1a1a;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: #666666;
+}
+
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #666666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
+}
+
+.task-checkbox:hover {
+  border-color: #ffffff;
+}
+
+.task-item.completed .task-checkbox {
+  background-color: #666666;
+  border-color: #666666;
+}
+
+.check-icon {
+  color: #ffffff;
+  width: 14px;
+  height: 14px;
+}
+
+.circle-icon {
+  color: transparent;
+  width: 14px;
+  height: 14px;
+}
+
+.task-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.task-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.task-date {
+  font-size: 12px;
+  color: #666666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 12px;
+  flex-shrink: 0;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  background-color: rgba(128, 128, 128, 0.15);
+  color: #aaaaaa;
+}
+
+.task-status-badge[data-status="pendente"] {
+  background-color: rgba(128, 128, 128, 0.15);
+  color: #aaaaaa;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.no-tasks {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666666;
+  font-size: 14px;
+}
+
+/* Mobile Menu - definições principais */
+.mobile-menu-container {
+  display: none;
+}
+
+.mobile-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: 10px;
+  color: #ffffff;
+}
+
+.hamburger-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: transform 0.2s ease, color 0.2s ease;
+  border-radius: 4px;
+}
+
+.hamburger-button:hover {
+  color: #f0f0f0;
+}
+
+.hamburger-button:active {
+  transform: scale(0.9);
+}
+
+/* Efeito de rotação do ícone */
+.hamburger-button svg {
+  transition: transform 0.3s ease;
+}
+
+.hamburger-button.active svg {
+  transform: rotate(90deg);
+}
+
+/* Menu mobile - oculto por padrão */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 200px;
+  background-color: #101010;
+  border-right: 1px solid #1f1f1f;
+  border-bottom: 1px solid #1f1f1f;
+  border-radius: 0 0 4px 0;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Itens do menu */
+.mobile-menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.mobile-menu-item {
+  padding: 15px 20px;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.mobile-menu-item:hover {
+  background-color: #1a1a1a;
+}
+
+.mobile-menu-item span {
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.mobile-menu-item:last-child {
+  color: #f87171;
+}
+
+.mobile-menu-item:last-child span {
+  color: #f87171;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-main {
+    padding: 24px 20px;
+  }
+  
+  .greeting {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-sidebar {
+    width: 240px;
+    min-width: 240px;
+    padding: 24px 16px;
+  }
+  
+  .logo-menu {
+    font-size: 24px;
+    letter-spacing: 16px;
+  }
+  
+  .sidebar-subtitle {
+    margin-left: 20px;
+  }
+  
+  .add-task-btn, .filter-btn {
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Sidebar oculta em mobile */
+  .dashboard-sidebar {
+    display: none;
+  }
+  
+  /* Header mobile com logo centralizado */
+  .mobile-menu-container {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: #101010;
+    padding: 16px 20px;
+    border-bottom: 1px solid #1f1f1f;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .mobile-logo {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .hamburger-button {
+    position: absolute;
+    left: 20px;
+    right: auto;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .hamburger-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .hamburger-button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(0.92);
+  }
+  
+  /* Menu mobile visível quando aberto */
+  .mobile-menu {
+    display: block;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .mobile-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+  
+  /* Ajustes no conteúdo principal para mobile */
+  .dashboard-main {
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding-top: 0;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .greeting {
+    font-size: 24px;
+  }
+
+  .tasks-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Melhorias na lista de tarefas para mobile */
+  .task-list {
+    gap: 16px;
+    margin-top: 20px;
+    padding-bottom: 60px;
+  }
+
+  .task-item {
+    padding: 20px;
+    border-radius: 12px;
+    min-height: 80px;
+  }
+
+  .task-checkbox {
+    width: 28px;
+    height: 28px;
+    margin-right: 16px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .task-content {
+    gap: 6px;
+  }
+
+  .task-title {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .task-date {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .task-tag {
+    padding: 6px 14px;
+    font-size: 12px;
+    margin-left: 12px;
+  }
+
+  .search-container {
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    padding: 16px 20px 16px 48px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-main {
+    padding: 16px;
+    padding-top: 70px;
+  }
+  
+  .greeting {
+    font-size: 20px;
+  }
+  
+  .date-time {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .add-task-btn, .filter-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .search-input {
+    padding: 14px 20px 14px 44px;
+    font-size: 16px;
+  }
+  
+  .task-list {
+    gap: 14px;
+    margin-top: 16px;
+    padding-bottom: 50px;
+  }
+  
+  .task-item {
+    padding: 18px;
+    min-height: 76px;
+  }
+
+  .task-checkbox {
+    width: 26px;
+    height: 26px;
+    margin-right: 14px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .task-title {
+    font-size: 15px;
+  }
+
+  .task-date {
+    font-size: 12px;
+  }
+
+  .task-tag {
+    padding: 5px 12px;
+    font-size: 11px;
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-main {
+    padding: 12px;
+    padding-top: 70px;
+  }
+
+  .task-list {
+    gap: 12px;
+    margin-top: 12px;
+    padding-bottom: 40px;
+  }
+  
+  .task-item {
+    padding: 16px;
+    min-height: 72px;
+  }
+
+  .task-checkbox {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .task-content {
+    gap: 4px;
+  }
+
+  .task-title {
+    font-size: 14px;
+  }
+
+  .task-date {
+    font-size: 11px;
+  }
+
+  .task-tag {
+    padding: 4px 10px;
+    font-size: 10px;
+    margin-left: 8px;
+  }
+
+  .search-input {
+    padding: 12px 18px 12px 40px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-main {
+    padding: 10px;
+    padding-top: 70px;
+  }
+
+  .task-list {
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 30px;
+  }
+  
+  .task-item {
+    padding: 14px;
+    min-height: 68px;
+  }
+
+  .task-checkbox {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+  }
+
+  .check-icon,
+  .circle-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .task-title {
+    font-size: 13px;
+  }
+
+  .task-date {
+    font-size: 10px;
+  }
+
+  .task-tag {
+    padding: 3px 8px;
+    font-size: 9px;
+    margin-left: 6px;
+  }
+}
+
+/* Estilos específicos para os ícones de status */
+.menu-item .menu-icon.status-icon {
+  transition: all 0.2s ease;
+}
+
+/* Estilo para o ícone de tarefas pendentes */
+.menu-item[data-status="pending"] .menu-icon {
+  color: #aaaaaa;
+}
+
+.menu-item[data-status="pending"].active .menu-icon {
+  color: #cccccc;
+}
+
+/* Estilo para o ícone de tarefas concluídas */
+.menu-item[data-status="completed"] .menu-icon {
+  color: #aaaaaa;
+}
+
+.menu-item[data-status="completed"].active .menu-icon {
+  color: #cccccc;
+}
+
+/* Garantir que a seção de grupos não ocupe muito espaço */
+.sidebar-section:nth-child(3) .sidebar-menu {
+  max-height: 150px;
+}

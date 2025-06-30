@@ -1,0 +1,864 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  will-change: opacity;
+}
+
+.task-detail-modal {
+  background-color: #101010;
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  overflow: hidden;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.modal-content {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-group {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+.form-group:last-of-type {
+  margin-bottom: 16px;
+}
+
+.form-group h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.form-group p {
+  margin: 0 0 12px 0;
+  font-size: 0.85rem;
+  color: #888;
+  line-height: 1.4;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #bbb;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  left: 0;
+  overflow: visible;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 14px 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #aaaaaa;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  position: relative;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #cccccc;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: rgba(170, 170, 170, 0.5);
+}
+
+/* Estilização para o campo de data */
+.date-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.date-icon {
+  position: absolute;
+  left: 16px;
+  color: rgba(170, 170, 170, 0.7);
+  pointer-events: none;
+}
+
+.date-input {
+  padding-left: 42px !important;
+  color-scheme: dark;
+}
+
+/* Estilização para o calendário nativo */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+
+.form-group select::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-group select::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.form-group select::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 4px;
+}
+
+.form-group select option {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 12px;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.form-group select option:first-of-type {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.form-group select option:last-of-type {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom: none;
+}
+
+.form-group select option:hover,
+.form-group select option:focus {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.form-group select option:checked {
+  background-color: #333;
+  color: #fff;
+}
+
+.form-group select option:disabled {
+  color: #666;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Estilos específicos para o modal de detalhes */
+.task-status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.task-status-badge[data-status="pendente"] {
+  background-color: rgba(128, 128, 128, 0.15);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.task-status-badge[data-status="concluída"] {
+  background-color: rgba(128, 128, 128, 0.15);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.task-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-group h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.detail-value {
+  margin: 0;
+  font-size: 1rem;
+  color: #aaaaaa;
+  line-height: 1.5;
+}
+
+.detail-value.description {
+  white-space: pre-wrap;
+  background-color: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #444;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+  color: #888;
+}
+
+.error-message {
+  color: #ff6b6b;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: rgba(255, 107, 107, 0.1);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.cancel-button,
+.submit-button,
+.edit-button,
+.delete-button,
+.status-button {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.cancel-button {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #bbb;
+}
+
+.submit-button {
+  background-color: #2a2a2a;
+  border: none;
+  color: white;
+}
+
+.edit-button {
+  background-color: #2a2a2a;
+  border: none;
+  color: white;
+  margin-left: auto;
+}
+
+.delete-button {
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  color: #f44336;
+}
+
+.status-button {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #bbb;
+}
+
+.cancel-button:hover,
+.status-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.submit-button:hover,
+.edit-button:hover {
+  background-color: #3a3a3a;
+  transform: translateY(-1px);
+}
+
+.delete-button:hover {
+  background-color: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.5);
+}
+
+.cancel-button:disabled,
+.submit-button:disabled,
+.edit-button:disabled,
+.delete-button:disabled,
+.status-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 520px) {
+  .task-detail-modal {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px;
+  }
+  
+  .cancel-button,
+  .submit-button,
+  .edit-button,
+  .delete-button,
+  .status-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .edit-button {
+    order: -1;
+    margin-left: 0;
+  }
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .task-detail-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 90vh;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .modal-content {
+    padding: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-group h3 {
+    font-size: 1rem;
+  }
+
+  .form-group p {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .modal-actions {
+    padding: 16px 20px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cancel-button,
+  .submit-button,
+  .edit-button,
+  .delete-button,
+  .status-button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+  }
+
+  .task-status-badge {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .detail-group {
+    margin-bottom: 20px;
+  }
+
+  .detail-group h3 {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+
+  .detail-value {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-detail-modal {
+    height: 95vh;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .modal-content {
+    padding: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .modal-actions {
+    padding: 12px 16px;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .cancel-button,
+  .submit-button,
+  .edit-button,
+  .delete-button,
+  .status-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    min-height: 40px;
+    min-width: 100px;
+    max-width: 180px;
+  }
+
+  .detail-group {
+    margin-bottom: 16px;
+  }
+
+  .detail-group h3 {
+    font-size: 0.9rem;
+  }
+
+  .detail-value {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .task-detail-modal {
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header {
+    padding: 12px 14px;
+    border-radius: 0;
+  }
+
+  .modal-content {
+    padding: 14px;
+  }
+
+  .modal-actions {
+    padding: 10px 14px;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .cancel-button,
+  .submit-button,
+  .edit-button,
+  .delete-button,
+  .status-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    min-height: 36px;
+    min-width: 80px;
+    max-width: 150px;
+  }
+}
+
+/* Melhorias para orientação landscape em dispositivos móveis */
+@media (max-width: 768px) and (orientation: landscape) {
+  .task-detail-modal {
+    height: 100vh;
+    max-height: 100vh;
+  }
+
+  .modal-content {
+    padding: 16px 20px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .modal-actions {
+    padding: 12px 20px;
+    justify-content: center;
+  }
+}
+
+/* Confirmação de exclusão */
+.delete-confirmation-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+.delete-confirmation {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.delete-confirmation h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #f87171;
+  font-size: 18px;
+}
+
+.delete-confirmation p {
+  margin-bottom: 8px;
+  color: #e0e0e0;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.cancel-delete-button {
+  background-color: transparent;
+  border: 1px solid #444;
+  color: #e0e0e0;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cancel-delete-button:hover {
+  background-color: #2a2a2a;
+}
+
+.confirm-delete-button {
+  background-color: #f87171;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.confirm-delete-button:hover {
+  background-color: #ef4444;
+}
+
+.confirm-delete-button:disabled,
+.cancel-delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ajustes de layout para o rodapé do modal */
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #333;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.status-toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #2a2a2a;
+  border: none;
+  color: #e0e0e0;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.status-toggle-button[data-status="pendente"]:hover {
+  background-color: #059669;
+}
+
+.status-toggle-button[data-status="concluída"]:hover {
+  background-color: #4b5563;
+}
+
+.edit-button, .delete-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid #444;
+  color: #e0e0e0;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.delete-button:hover {
+  background-color: #f87171;
+  border-color: #f87171;
+}
+
+.save-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #2563eb;
+  border: none;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.save-button:hover {
+  background-color: #1d4ed8;
+}
+
+.cancel-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid #444;
+  color: #e0e0e0;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #2a2a2a;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .modal-footer {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .action-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .status-toggle-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .delete-confirmation {
+    width: 95%;
+    padding: 20px;
+  }
+  
+  .delete-confirmation-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .confirm-delete-button, .cancel-delete-button {
+    width: 100%;
+  }
+} 
