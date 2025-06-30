@@ -8,6 +8,7 @@ import { authService } from '../../services/auth.service';
 import { taskService } from '../../services/task.service';
 import AddTaskModal from '../../components/AddTaskModal';
 import TaskDetailModal from '../../components/TaskDetailModal';
+import TaskAdvisor from '../../components/TaskAdvisor';
 
 const Dashboard = () => {
   const [userName, setUserName] = useState('');
@@ -772,6 +773,8 @@ const Dashboard = () => {
           </div>
         </motion.div>
       </div>
+
+      <TaskAdvisor />
     </motion.div>
   );
 };

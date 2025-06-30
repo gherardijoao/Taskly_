@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { AppDataSource } from './database/data-source';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
@@ -12,6 +13,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 setupSwagger(app);
+
+// Configurações de segurança
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"], // Necessário para o Swagger UI
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Necessário para o Swagger UI
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Necessário para o Swagger UI
+}));
 
 // Enable CORS for all requests
 app.use(cors());

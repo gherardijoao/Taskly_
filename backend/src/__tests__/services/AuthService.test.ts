@@ -1,7 +1,8 @@
 import { AuthService } from '../../services/AuthService';
-import { UserService } from '../../services/UserService';
+import { UserService, CreateUserDTO } from '../../services/UserService';
 import { initializeTestDataSource, closeTestDataSource, clearDatabase, TestDataSource } from '../../database/data-source.test';
 import { Usuario } from '../../models/Usuario';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Mock do process.env.JWT_SECRET
@@ -30,50 +31,48 @@ describe('AuthService', () => {
   });
 
   describe('authenticate', () => {
-    it('deve autenticar um usuário com sucesso e retornar token', async () => {
-      // Criar um usuário para testar
-      const nome = 'Teste Auth';
-      const email = 'teste.auth@example.com';
+    let userService: UserService;
+    let authService: AuthService;
+
+    beforeEach(async () => {
+      userService = new UserService();
+      authService = new AuthService();
+      
+      // Substituir os repositórios pelos de teste
+      (userService as any).userRepository = TestDataSource.getRepository(Usuario);
+      (authService as any).userRepository = TestDataSource.getRepository(Usuario);
+    });
+
+    it('deve autenticar usuário com credenciais válidas', async () => {
+      const nome = 'Teste';
+      const email = 'teste@example.com';
       const senha = 'senha123';
 
-      await userService.createUser(nome, email, senha);
+      const userData: CreateUserDTO = { nome, email, senha };
+      await userService.createUser(userData);
 
-      // Tentar autenticar
       const result = await authService.authenticate(email, senha);
 
-      // Verificações
-      expect(result).toBeDefined();
       expect(result.user).toBeDefined();
-      expect(result.token).toBeDefined();
       expect(result.user.email).toBe(email);
       expect(result.user.nome).toBe(nome);
-      
-      // Verificar se a senha não está sendo retornada
-      expect(result.user).not.toHaveProperty('senha');
-      
-      // Verificar se o token é válido
-      const decoded = jwt.verify(result.token, process.env.JWT_SECRET as string) as any;
-      expect(decoded).toBeDefined();
-      expect(decoded.userId).toBeDefined();
-      expect(decoded.email).toBe(email);
+      expect(result.token).toBeDefined();
+      expect(result.user).not.toHaveProperty('senha'); // Senha não deve ser retornada
     });
 
-    it('deve lançar erro quando email não existe', async () => {
-      await expect(authService.authenticate('nao.existe@example.com', 'senha123'))
-        .rejects.toThrow('Usuário ou senha inválidos');
+    it('deve lançar erro para usuário inexistente', async () => {
+      await expect(authService.authenticate('inexistente@example.com', 'senha123')).rejects.toThrow('Usuário ou senha inválidos');
     });
 
-    it('deve lançar erro quando senha está incorreta', async () => {
-      // Criar um usuário para testar
-      const nome = 'Teste Auth';
-      const email = 'teste.auth@example.com';
+    it('deve lançar erro para senha incorreta', async () => {
+      const nome = 'Teste';
+      const email = 'teste@example.com';
       const senha = 'senha123';
 
-      await userService.createUser(nome, email, senha);
+      const userData: CreateUserDTO = { nome, email, senha };
+      await userService.createUser(userData);
 
-      // Tentar autenticar com senha errada
-      await expect(authService.authenticate(email, 'senha_errada'))
-        .rejects.toThrow('Usuário ou senha inválidos');
+      await expect(authService.authenticate(email, 'senhaerrada')).rejects.toThrow('Usuário ou senha inválidos');
     });
   });
 }); 

@@ -1,0 +1,327 @@
+.task-advisor-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  font-family: 'Poppins', sans-serif;
+}
+
+.task-advisor-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.task-advisor-button:hover {
+  background-color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.task-advisor-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  backdrop-filter: blur(8px);
+}
+
+.task-advisor-content {
+  background-color: #101010;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-advisor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.task-advisor-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.task-advisor-close {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.task-advisor-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.task-advisor-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.task-advisor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.task-advisor-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-advisor-form-group label {
+  font-weight: 500;
+  color: #bbb;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+}
+
+.task-advisor-form-group input,
+.task-advisor-form-group textarea,
+.task-advisor-form-group select {
+  padding: 14px 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.task-advisor-form-group input:focus,
+.task-advisor-form-group textarea:focus,
+.task-advisor-form-group select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.task-advisor-form-group input::placeholder,
+.task-advisor-form-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.task-advisor-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.task-advisor-form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.task-advisor-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.task-advisor-button-secondary {
+  flex: 1;
+  padding: 14px 20px;
+  background-color: transparent;
+  color: #bbb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.task-advisor-button-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.task-advisor-button-primary {
+  flex: 1;
+  padding: 14px 20px;
+  background-color: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.task-advisor-button-primary:hover {
+  background-color: #333;
+}
+
+.task-advisor-button-primary:disabled {
+  background-color: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.task-advisor-result {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  display: none;
+}
+
+.task-advisor-result.show {
+  display: block;
+}
+
+.task-advisor-result h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.task-advisor-result p {
+  margin: 0 0 8px 0;
+  color: #bbb;
+  line-height: 1.5;
+}
+
+.task-advisor-result .suggestion-name {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.task-advisor-result .suggestion-description {
+  color: #bbb;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.task-advisor-result .suggestion-category {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.task-advisor-result .suggestion-date {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.task-advisor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #bbb;
+}
+
+.task-advisor-loading::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.task-advisor-error {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .task-advisor-container {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .task-advisor-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .task-advisor-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .task-advisor-header {
+    padding: 16px 20px;
+  }
+  
+  .task-advisor-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .task-advisor-body {
+    padding: 20px;
+  }
+  
+  .task-advisor-actions {
+    flex-direction: column;
+  }
+} 

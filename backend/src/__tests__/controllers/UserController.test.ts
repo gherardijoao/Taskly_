@@ -1,5 +1,5 @@
 import { UserController } from '../../controllers/UserController';
-import { UserService } from '../../services/UserService';
+import { UserService, CreateUserDTO } from '../../services/UserService';
 import { Request, Response } from 'express';
 
 describe('UserController', () => {
@@ -35,11 +35,12 @@ describe('UserController', () => {
   describe('create', () => {
     it('deve criar um usuário com sucesso', async () => {
       // Configurar o mock request
-      mockRequest.body = {
+      const userData: CreateUserDTO = {
         nome: 'Usuário Teste',
         email: 'teste@example.com',
         senha: 'senha123'
       };
+      mockRequest.body = userData;
       
       // Configurar o mock do serviço
       const mockUser = {
@@ -57,11 +58,7 @@ describe('UserController', () => {
       await userController.create(mockRequest as Request, mockResponse as Response);
       
       // Verificar se o serviço foi chamado corretamente
-      expect((userController as any).userService.createUser).toHaveBeenCalledWith(
-        mockRequest.body.nome,
-        mockRequest.body.email,
-        mockRequest.body.senha
-      );
+      expect((userController as any).userService.createUser).toHaveBeenCalledWith(userData);
       
       // Verificar a resposta
       expect(mockStatus).toHaveBeenCalledWith(201);
@@ -93,6 +90,26 @@ describe('UserController', () => {
       expect(mockJson).toHaveBeenCalledWith(expect.objectContaining({
         error: expect.any(String)
       }));
+    });
+
+    it('deve retornar erro 400 quando serviço lança erro', async () => {
+      // Configurar o mock request
+      const userData: CreateUserDTO = {
+        nome: 'Usuário Teste',
+        email: 'email-invalido',
+        senha: 'senha123'
+      };
+      mockRequest.body = userData;
+      
+      // Configurar o mock do serviço para lançar erro
+      (userController as any).userService.createUser.mockRejectedValue(new Error('E-mail inválido'));
+      
+      // Executar o método
+      await userController.create(mockRequest as Request, mockResponse as Response);
+      
+      // Verificar a resposta
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({ error: 'E-mail inválido' });
     });
   });
 }); 
