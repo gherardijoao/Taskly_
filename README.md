@@ -28,9 +28,7 @@ Sistema completo para gerenciamento de tarefas com interface web moderna e API R
 - [Testes](#testes)
 - [Scripts e Comandos](#scripts-e-comandos)
 - [Segurança](#segurança)
-- [Responsividade](#responsividade)
 - [Convenções e Padrões](#convenções-e-padrões)
-- [Contribuição](#contribuição)
 
 ## Sobre o Projeto
 
