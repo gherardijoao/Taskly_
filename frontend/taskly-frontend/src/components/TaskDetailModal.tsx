@@ -159,21 +159,19 @@ const TaskDetailModal = ({ isOpen, onClose, onTaskUpdated, onTaskDeleted, taskId
   const handleDelete = async () => {
     if (!task) return;
 
-    if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
-      setIsDeleting(true);
-      try {
-        await taskService.deleteTask(task.id);
-        
-        // Fechar modal e notificar componente pai
-        onClose();
-        if (onTaskDeleted) {
-          onTaskDeleted();
-        }
-      } catch (error) {
-        console.error('Erro ao excluir tarefa:', error);
-        setError('Erro ao excluir tarefa.');
-        setIsDeleting(false);
+    setIsDeleting(true);
+    try {
+      await taskService.deleteTask(task.id);
+      
+      // Fechar modal e notificar componente pai
+      onClose();
+      if (onTaskDeleted) {
+        onTaskDeleted();
       }
+    } catch (error) {
+      console.error('Erro ao excluir tarefa:', error);
+      setError('Erro ao excluir tarefa.');
+      setIsDeleting(false);
     }
   };
 

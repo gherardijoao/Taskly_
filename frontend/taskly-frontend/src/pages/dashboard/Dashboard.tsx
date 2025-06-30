@@ -1,24 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiSearch, FiPlus, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import './Dashboard.css';
-import { taskService } from '../../services/task.service';
+import type { Task } from '../../types/task.types';
 import { authService } from '../../services/auth.service';
+import { taskService } from '../../services/task.service';
 import AddTaskModal from '../../components/AddTaskModal';
 import TaskDetailModal from '../../components/TaskDetailModal';
-
-// Interface local para compatibilidade com o código existente
-interface Task {
-  id: string;
-  nome: string;
-  descricao?: string;
-  status: 'pendente' | 'concluída';
-  dataCriacao: string;
-  dataCumprimento?: string;
-  tag?: string;
-  categoria?: string;
-}
 
 const Dashboard = () => {
   const [userName, setUserName] = useState('');
@@ -68,7 +57,7 @@ const Dashboard = () => {
           status: task.status,
           dataCriacao: task.dataCriacao,
           dataCumprimento: task.dataCumprimento,
-          tag: task.categoria, // Usar categoria como tag para compatibilidade
+          dataAtualizacao: task.dataAtualizacao,
           categoria: task.categoria
         }));
         
@@ -188,7 +177,8 @@ const Dashboard = () => {
           task.id === taskId ? { 
             ...task, 
             status: newStatus,
-            dataCumprimento: newStatus === 'concluída' ? new Date().toISOString() : undefined
+            dataCumprimento: newStatus === 'concluída' ? new Date().toISOString() : undefined,
+            dataAtualizacao: new Date().toISOString()
           } : task
         )
       );
@@ -220,7 +210,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
     }
@@ -237,7 +227,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
       return;
@@ -253,7 +243,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
     } catch (error) {
@@ -295,7 +285,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
       
@@ -319,7 +309,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
       
@@ -343,7 +333,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
       
@@ -373,7 +363,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
       
@@ -428,7 +418,7 @@ const Dashboard = () => {
         status: task.status,
         dataCriacao: task.dataCriacao,
         dataCumprimento: task.dataCumprimento,
-        tag: task.categoria,
+        dataAtualizacao: task.dataAtualizacao,
         categoria: task.categoria
       })));
       
@@ -464,27 +454,32 @@ const Dashboard = () => {
 
   const formatDate = (dateStr: string | undefined) => {
     if (!dateStr) return '';
+    
     // Se vier no formato 'YYYY-MM-DD', tratar manualmente para evitar erro de fuso horário
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       const [year, month, day] = dateStr.split('-');
-      const date = new Date(Number(year), Number(month) - 1, Number(day));
-      const currentYear = new Date().getFullYear();
-      const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
-      if (date.getFullYear() === currentYear) {
-        return `${Number(day)} de ${monthName}`;
-      }
-      return `${Number(day)} de ${monthName} de ${year}`;
+      // Retornar diretamente no formato DD/MM/YYYY sem criar objeto Date
+      return `${Number(day)}/${Number(month)}/${year}`;
     }
-    // Caso contrário, usar o método padrão
-    const date = new Date(dateStr);
-    const currentYear = new Date().getFullYear();
-    const day = date.getDate();
-    const month = date.toLocaleDateString('pt-BR', { month: 'short' });
-    const year = date.getFullYear();
-    if (year === currentYear) {
-      return `${day} de ${month}`;
+    
+    // Para datas em formato ISO (com timestamp)
+    if (dateStr.includes('T')) {
+      const [datePart] = dateStr.split('T');
+      const [year, month, day] = datePart.split('-');
+      return `${Number(day)}/${Number(month)}/${year}`;
     }
-    return `${day} de ${month} de ${year}`;
+    
+    // Fallback para outros formatos
+    try {
+      const date = new Date(dateStr);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return dateStr; // Retorna a string original se não conseguir formatar
+    }
   };
 
   if (isLoading) {
