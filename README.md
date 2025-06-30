@@ -106,6 +106,7 @@ Para usar o consultor de tarefas, você precisa configurar a chave da API Gemini
 - **PostgreSQL** - Banco de dados relacional
 - **JWT** - Autenticação baseada em tokens
 - **bcryptjs** - Criptografia de senhas
+- **Helmet.js** - Headers de segurança HTTP
 - **Swagger** - Documentação da API
 - **Docker** - Containerização
 
@@ -155,97 +156,19 @@ taskly/
 
 O sistema implementa validações robustas usando DTOs (Data Transfer Objects) tipados para garantir a integridade e segurança dos dados.
 
-### DTOs de Usuário
+### DTOs Implementados
 
-#### CreateUserDTO
-```typescript
-interface CreateUserDTO {
-  nome: string;      // Mínimo 2 caracteres, sem espaços extras
-  email: string;     // Formato válido, normalizado para lowercase
-  senha: string;     // Mínimo 6 chars, 1 letra + 1 número
-}
-```
+- **CreateUserDTO** - Criação de usuário com validação de email, senha e nome
+- **UpdateUserDTO** - Atualização de usuário com validações opcionais
+- **CreateTarefaDTO** - Criação de tarefa com validação de status e dados
+- **UpdateTarefaDTO** - Atualização de tarefa com validações flexíveis
 
-#### UpdateUserDTO
-```typescript
-interface UpdateUserDTO {
-  nome?: string;     // Opcional, mesma validação do CreateUserDTO
-  email?: string;    // Opcional, verificação de duplicatas
-  senha?: string;    // Opcional, mesma validação do CreateUserDTO
-}
-```
+### Validações Principais
 
-### DTOs de Tarefa
-
-#### CreateTarefaDTO
-```typescript
-interface CreateTarefaDTO {
-  nome: string;                    // Obrigatório, máximo 255 chars
-  descricao?: string;              // Opcional
-  status?: 'pendente' | 'concluída'; // Padrão: 'pendente'
-  categoria?: string;              // Opcional
-  dataCumprimento?: Date;          // Opcional, automático se concluída
-}
-```
-
-#### UpdateTarefaDTO
-```typescript
-interface UpdateTarefaDTO {
-  nome?: string;                   // Opcional, mesma validação
-  descricao?: string;              // Opcional
-  status?: 'pendente' | 'concluída'; // Opcional
-  categoria?: string;              // Opcional
-  dataCumprimento?: Date;          // Opcional
-}
-```
-
-### Validações Implementadas
-
-#### Email
-- ✅ **Regex robusto**: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
-- ✅ **Normalização**: Conversão para lowercase
-- ✅ **Sanitização**: Remoção de espaços em branco
-- ✅ **Unicidade**: Verificação de duplicatas no banco
-
-#### Senha
-- ✅ **Comprimento mínimo**: 6 caracteres
-- ✅ **Complexidade**: Pelo menos uma letra e um número
-- ✅ **Criptografia**: Hash seguro com bcrypt (salt rounds: 10)
-
-#### Nome
-- ✅ **Comprimento mínimo**: 2 caracteres
-- ✅ **Sanitização**: Remoção de espaços em branco
-- ✅ **Validação**: Não pode ser apenas espaços
-
-#### Tarefas
-- ✅ **Nome obrigatório**: Não pode ser vazio ou muito longo
-- ✅ **Status válido**: Apenas 'pendente' ou 'concluída'
-- ✅ **Data automática**: Definida automaticamente ao marcar como concluída
-
-### Exemplos de Validação
-
-```typescript
-// ✅ Válido
-{
-  nome: "João Silva",
-  email: "joao@email.com",
-  senha: "senha123"
-}
-
-// ❌ Inválido - Email mal formatado
-{
-  nome: "João",
-  email: "email-invalido",
-  senha: "senha123"
-}
-
-// ❌ Inválido - Senha fraca
-{
-  nome: "João Silva", 
-  email: "joao@email.com",
-  senha: "123"
-}
-```
+- **Email**: Regex robusto, normalização lowercase, verificação de duplicatas
+- **Senha**: Mínimo 6 caracteres, 1 letra + 1 número, criptografia bcrypt
+- **Nome**: Mínimo 2 caracteres, sanitização de espaços
+- **Tarefas**: Nome obrigatório, status válido, data automática se concluída
 
 ## Instalação e Configuração
 
