@@ -35,7 +35,11 @@ import {
     @CreateDateColumn({ name: 'data_criacao' })
     dataCriacao!: Date;
     
-    @Column({ type: 'timestamp', name: 'data_cumprimento', nullable: true })
+    @Column({
+      type: process.env.NODE_ENV === 'test' ? 'datetime' : 'timestamp',
+      name: 'data_cumprimento',
+      nullable: true,
+    })
     dataCumprimento?: Date;
   
     @UpdateDateColumn({ name: 'data_atualizacao' })
