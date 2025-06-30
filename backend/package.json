@@ -4,10 +4,12 @@
   "description": "Backend API para o projeto Taskly",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "ts-node-dev src/index.ts",
+    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "jest"
+    "test": "jest",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "update-db": "ts-node src/database/update-existing-tasks.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

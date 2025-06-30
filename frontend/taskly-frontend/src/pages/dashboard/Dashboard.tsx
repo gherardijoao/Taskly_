@@ -1,52 +1,98 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiSearch, FiPlus, FiFilter, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiSettings, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
+import { FiSearch, FiPlus, FiCheck, FiCircle, FiCalendar, FiUser, FiBookOpen, FiBriefcase, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
 import './Dashboard.css';
-
-interface Task {
-  id: string;
-  nome: string;
-  descricao?: string;
-  status: 'pendente' | 'concluída';
-  dataCriacao: string;
-  tag?: string;
-}
+import type { Task } from '../../types/task.types';
+import { authService } from '../../services/auth.service';
+import { taskService } from '../../services/task.service';
+import AddTaskModal from '../../components/AddTaskModal';
+import TaskDetailModal from '../../components/TaskDetailModal';
 
 const Dashboard = () => {
-  const [userName, setUserName] = useState('João');
-  const [isLoading, setIsLoading] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      nome: 'Estudar matemática discreta',
-      status: 'pendente',
-      dataCriacao: '2024-06-20',
-      tag: 'Estudos'
-    },
-    {
-      id: '2',
-      nome: 'Finalizar projeto React',
-      status: 'pendente',
-      dataCriacao: '2024-06-21',
-      tag: 'Trabalho'
-    },
-    {
-      id: '3',
-      nome: 'Revisar código do backend',
-      status: 'pendente',
-      dataCriacao: '2024-06-22',
-      tag: 'Trabalho'
-    }
-  ]);
+  const [userName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [completedTaskCount, setCompletedTaskCount] = useState(0);
-  const [totalTaskCount, setTotalTaskCount] = useState(3);
+  const [totalTaskCount, setTotalTaskCount] = useState(0);
+  const [todayTaskCount, setTodayTaskCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [tasksByCategory, setTasksByCategory] = useState<Record<string, number>>({});
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<'all' | 'today' | 'pending' | 'completed' | string>('all');
   
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Verificar autenticação e carregar dados do usuário
+  useEffect(() => {
+    if (!authService.isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+    
+    const user = authService.getUserName();
+    setUserName(user || 'Usuário');
+  }, [navigate]);
+
+  // Carregar tarefas e resumo
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Carregar todas as tarefas
+        const tasksData = await taskService.getAllTasks();
+        
+        // Adaptar para o formato esperado pelo componente
+        const adaptedTasks: Task[] = tasksData.map(task => ({
+          id: task.id,
+          nome: task.nome,
+          descricao: task.descricao,
+          status: task.status,
+          dataCriacao: task.dataCriacao,
+          dataCumprimento: task.dataCumprimento,
+          dataAtualizacao: task.dataAtualizacao,
+          categoria: task.categoria
+        }));
+        
+        setTasks(adaptedTasks);
+        
+        // Carregar resumo para estatísticas
+        const summary = await taskService.getTaskSummary();
+        setCompletedTaskCount(summary.concluidas);
+        setTotalTaskCount(summary.total);
+        setTasksByCategory(summary.porCategoria);
+        
+        // Carregar contador de tarefas de hoje
+        const todayTasks = await taskService.getTodayTasks();
+        setTodayTaskCount(todayTasks.length);
+        
+        // Extrair categorias disponíveis do resumo
+        const categories = Object.keys(summary.porCategoria).filter(
+          category => category !== 'null' && category !== 'undefined' && category !== 'Sem categoria'
+        );
+        setAvailableCategories(categories);
+        
+        // Definir a seção ativa como 'all' ao carregar inicialmente
+        setActiveSection('all');
+        
+      } catch (error) {
+        console.error('Erro ao carregar tarefas:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    if (authService.isAuthenticated()) {
+      loadTasks();
+    }
+  }, []);
 
   // Fechar o menu quando clicar fora dele
   useEffect(() => {
@@ -106,15 +152,12 @@ const Dashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    authService.logout();
     navigate('/login');
   };
 
   const handleProfileClick = () => {
-    // Esta é uma função temporária para implementação futura
-    console.log('Perfil clicado - funcionalidade em breve');
-    // Navegará para a página de perfil no futuro
-    // navigate('/profile');
+    navigate('/profile');
   };
 
   const toggleMobileMenu = () => {
@@ -122,33 +165,270 @@ const Dashboard = () => {
   };
 
   const toggleTaskStatus = async (taskId: string, currentStatus: 'pendente' | 'concluída') => {
-    const newStatus = currentStatus === 'pendente' ? 'concluída' : 'pendente';
-    
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
-    );
+    try {
+      const taskToUpdate = tasks.find(task => task.id === taskId);
+      if (!taskToUpdate) return;
+      
+      const newStatus = currentStatus === 'pendente' ? 'concluída' : 'pendente';
+      
+      // Atualizar localmente para feedback imediato
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === taskId ? { 
+            ...task, 
+            status: newStatus,
+            dataCumprimento: newStatus === 'concluída' ? new Date().toISOString() : undefined,
+            dataAtualizacao: new Date().toISOString()
+          } : task
+        )
+      );
 
-    if (newStatus === 'concluída') {
-      setCompletedTaskCount(prev => prev + 1);
-    } else {
-      setCompletedTaskCount(prev => prev - 1);
+      if (newStatus === 'concluída') {
+        setCompletedTaskCount(prev => prev + 1);
+      } else {
+        setCompletedTaskCount(prev => prev - 1);
+      }
+      
+      // Enviar para o backend
+      await taskService.updateTask(taskId, { status: newStatus });
+      
+      // Atualizar resumo
+      const summary = await taskService.getTaskSummary();
+      setCompletedTaskCount(summary.concluidas);
+      setTasksByCategory(summary.porCategoria);
+      
+    } catch (error) {
+      console.error('Erro ao atualizar status da tarefa:', error);
+      // Reverter em caso de erro
+      setTasks(prevTasks => [...prevTasks]);
+      // Recarregar dados
+      const tasksData = await taskService.getAllTasks();
+      setTasks(tasksData.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
     }
   };
 
-  const filteredTasks = tasks.filter(task => 
-    task.nome.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      // Se a busca estiver vazia, carrega todas as tarefas
+      const tasksData = await taskService.getAllTasks();
+      setTasks(tasksData.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      const searchResults = await taskService.searchTasks(searchQuery);
+      setTasks(searchResults.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+    } catch (error) {
+      console.error('Erro na busca:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Filtrar tarefas localmente baseado na busca
+  const filteredTasks = searchQuery.trim() === '' 
+    ? tasks 
+    : tasks.filter(task => 
+        task.nome.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
   const getTasksByCategory = (category: string) => {
-    return tasks.filter(task => getTaskTag(task) === category).length;
+    return tasksByCategory[category] || 0;
   };
 
   const getTaskTag = (task: Task) => {
+    // Se a tarefa já tem categoria definida, use-a
+    if (task.categoria) return task.categoria;
+    
+    // Caso contrário, infere baseado no nome (compatibilidade com código anterior)
     if (task.nome.toLowerCase().includes('estudar') || task.nome.toLowerCase().includes('matemática')) return 'Estudos';
     if (task.nome.toLowerCase().includes('projeto') || task.nome.toLowerCase().includes('react') || task.nome.toLowerCase().includes('código') || task.nome.toLowerCase().includes('backend')) return 'Trabalho';
     return 'Pessoal';
+  };
+
+  const loadTasksByCategory = async (category: string) => {
+    try {
+      setIsLoading(true);
+      const categoryTasks = await taskService.getTasksByCategory(category);
+      setTasks(categoryTasks.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+      
+      // Atualizar a seção ativa para a categoria selecionada
+      setActiveSection(category);
+    } catch (error) {
+      console.error(`Erro ao carregar tarefas da categoria ${category}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadTodayTasks = async () => {
+    try {
+      setIsLoading(true);
+      const todayTasks = await taskService.getTodayTasks();
+      setTasks(todayTasks.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+      
+      // Atualizar a seção ativa para 'today'
+      setActiveSection('today');
+    } catch (error) {
+      console.error('Erro ao carregar tarefas de hoje:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadAllTasks = async () => {
+    try {
+      setIsLoading(true);
+      const tasksData = await taskService.getAllTasks();
+      setTasks(tasksData.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+      
+      // Atualizar a seção ativa para 'all'
+      setActiveSection('all');
+    } catch (error) {
+      console.error('Erro ao carregar todas as tarefas:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddTask = () => {
+    setIsAddTaskModalOpen(true);
+  };
+
+  const handleTaskAdded = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Recarregar tarefas
+      const tasksData = await taskService.getAllTasks();
+      setTasks(tasksData.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+      
+      // Atualizar resumo
+      const summary = await taskService.getTaskSummary();
+      setCompletedTaskCount(summary.concluidas);
+      setTotalTaskCount(summary.total);
+      setTasksByCategory(summary.porCategoria);
+      
+      // Atualizar contador de tarefas de hoje
+      const todayTasks = await taskService.getTodayTasks();
+      setTodayTaskCount(todayTasks.length);
+      
+      // Atualizar categorias disponíveis
+      const categories = Object.keys(summary.porCategoria).filter(
+        category => category !== 'null' && category !== 'undefined' && category !== 'Sem categoria'
+      );
+      setAvailableCategories(categories);
+    } catch (error) {
+      console.error('Erro ao recarregar tarefas:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    setSelectedTaskId(taskId);
+    setIsTaskDetailModalOpen(true);
+  };
+
+  const handleTaskUpdated = async () => {
+    // Recarregar as tarefas e estatísticas após uma atualização
+    await handleTaskAdded(); // Reutiliza a função existente que já faz isso
+  };
+
+  const handleTaskDeleted = async () => {
+    // Recarregar as tarefas e estatísticas após uma exclusão
+    await handleTaskAdded(); // Reutiliza a função existente que já faz isso
+    setSelectedTaskId(null);
+  };
+
+  const loadTasksByStatus = async (status: 'pendente' | 'concluída') => {
+    try {
+      setIsLoading(true);
+      const allTasks = await taskService.getAllTasks();
+      const filteredTasks = allTasks.filter(task => task.status === status);
+      
+      setTasks(filteredTasks.map(task => ({
+        id: task.id,
+        nome: task.nome,
+        descricao: task.descricao,
+        status: task.status,
+        dataCriacao: task.dataCriacao,
+        dataCumprimento: task.dataCumprimento,
+        dataAtualizacao: task.dataAtualizacao,
+        categoria: task.categoria
+      })));
+      
+      // Atualizar a seção ativa para o status selecionado
+      setActiveSection(status === 'pendente' ? 'pending' : 'completed');
+    } catch (error) {
+      console.error(`Erro ao carregar tarefas ${status}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -172,6 +452,36 @@ const Dashboard = () => {
     }
   };
 
+  const formatDate = (dateStr: string | undefined) => {
+    if (!dateStr) return '';
+    
+    // Se vier no formato 'YYYY-MM-DD', tratar manualmente para evitar erro de fuso horário
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const [year, month, day] = dateStr.split('-');
+      // Retornar diretamente no formato DD/MM/YYYY sem criar objeto Date
+      return `${Number(day)}/${Number(month)}/${year}`;
+    }
+    
+    // Para datas em formato ISO (com timestamp)
+    if (dateStr.includes('T')) {
+      const [datePart] = dateStr.split('T');
+      const [year, month, day] = datePart.split('-');
+      return `${Number(day)}/${Number(month)}/${year}`;
+    }
+    
+    // Fallback para outros formatos
+    try {
+      const date = new Date(dateStr);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return dateStr; // Retorna a string original se não conseguir formatar
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="dashboard-loading">
@@ -187,6 +497,22 @@ const Dashboard = () => {
       initial="hidden"
       animate="visible"
     >
+      {/* Modal de adicionar tarefa */}
+      <AddTaskModal 
+        isOpen={isAddTaskModalOpen}
+        onClose={() => setIsAddTaskModalOpen(false)}
+        onTaskAdded={handleTaskAdded}
+      />
+
+      {/* Modal de detalhes da tarefa */}
+      <TaskDetailModal
+        isOpen={isTaskDetailModalOpen}
+        onClose={() => setIsTaskDetailModalOpen(false)}
+        onTaskUpdated={handleTaskUpdated}
+        onTaskDeleted={handleTaskDeleted}
+        taskId={selectedTaskId || undefined}
+      />
+
       {/* Menu para dispositivos móveis - só será visível em mobile devido ao CSS */}
       <div className="mobile-menu-container">
         <div className="mobile-logo">TASKLY</div>
@@ -222,75 +548,115 @@ const Dashboard = () => {
           <p className="sidebar-subtitle">Organize suas demandas</p>
         </div>
         
-        <motion.div variants={itemVariants} className="sidebar-section">
-          <h3 className="section-title">VISÃO GERAL</h3>
-          <ul className="sidebar-menu">
-            <li className="menu-item active">
-              <div className="menu-item-content">
-                <FiCalendar className="menu-icon" />
-                <span>Todas as Tarefas</span>
-              </div>
-              <span className="task-count">{totalTaskCount}</span>
-            </li>
-            <li className="menu-item">
-              <div className="menu-item-content">
-                <FiCalendar className="menu-icon" />
-                <span>Hoje</span>
-              </div>
-              <span className="task-count">0</span>
-            </li>
-          </ul>
-        </motion.div>
-        
-        <motion.div variants={itemVariants} className="sidebar-section">
-          <div className="section-header">
-            <h3 className="section-title">GRUPOS</h3>
-            <button className="add-group-btn">
-              <FiPlus size={14} />
-            </button>
-          </div>
-          <ul className="sidebar-menu">
-            <li className="menu-item">
-              <div className="menu-item-content">
-                <FiBookOpen className="menu-icon" />
-                <span>Estudos</span>
-              </div>
-              <span className="task-count">{getTasksByCategory('Estudos')}</span>
-            </li>
-            <li className="menu-item">
-              <div className="menu-item-content">
-                <FiBriefcase className="menu-icon" />
-                <span>Trabalho</span>
-              </div>
-              <span className="task-count">{getTasksByCategory('Trabalho')}</span>
-            </li>
-            <li className="menu-item">
-              <div className="menu-item-content">
-                <FiUser className="menu-icon" />
-                <span>Pessoal</span>
-              </div>
-              <span className="task-count">{getTasksByCategory('Pessoal')}</span>
-            </li>
-          </ul>
-        </motion.div>
-        
-        <motion.div variants={itemVariants} className="sidebar-section user-profile-section">
-          <h3 className="section-title">USUÁRIO</h3>
-          <ul className="sidebar-menu">
-            <li className="menu-item" onClick={handleProfileClick}>
-              <div className="menu-item-content">
-                <FiUser className="menu-icon" />
-                <span>Meu Perfil</span>
-              </div>
-            </li>
-            <li className="menu-item" onClick={handleLogout}>
-              <div className="menu-item-content">
-                <FiLogOut className="menu-icon" />
-                <span>Sair</span>
-              </div>
-            </li>
-          </ul>
-        </motion.div>
+        <div className="sidebar-sections-container">
+          <motion.div variants={itemVariants} className="sidebar-section">
+            <h3 className="section-title">VISÃO GERAL</h3>
+            <ul className="sidebar-menu">
+              <li 
+                className={`menu-item ${activeSection === 'all' ? 'active' : ''}`} 
+                onClick={loadAllTasks}
+              >
+                <div className="menu-item-content">
+                  <FiCalendar className="menu-icon" />
+                  <span>Todas as Tarefas</span>
+                </div>
+                <span className="task-count">{totalTaskCount}</span>
+              </li>
+              <li 
+                className={`menu-item ${activeSection === 'today' ? 'active' : ''}`} 
+                onClick={loadTodayTasks}
+              >
+                <div className="menu-item-content">
+                  <FiCalendar className="menu-icon" />
+                  <span>Hoje</span>
+                </div>
+                <span className="task-count">{todayTaskCount}</span>
+              </li>
+            </ul>
+          </motion.div>
+          
+          <motion.div variants={itemVariants} className="sidebar-section">
+            <h3 className="section-title">STATUS</h3>
+            <ul className="sidebar-menu">
+              <li 
+                className={`menu-item ${activeSection === 'pending' ? 'active' : ''}`} 
+                onClick={() => loadTasksByStatus('pendente')}
+                data-status="pending"
+              >
+                <div className="menu-item-content">
+                  <FiCircle className="menu-icon status-icon" />
+                  <span>Pendentes</span>
+                </div>
+                <span className="task-count">{totalTaskCount - completedTaskCount}</span>
+              </li>
+              <li 
+                className={`menu-item ${activeSection === 'completed' ? 'active' : ''}`} 
+                onClick={() => loadTasksByStatus('concluída')}
+                data-status="completed"
+              >
+                <div className="menu-item-content">
+                  <FiCheck className="menu-icon status-icon" />
+                  <span>Concluídas</span>
+                </div>
+                <span className="task-count">{completedTaskCount}</span>
+              </li>
+            </ul>
+          </motion.div>
+          
+          <motion.div variants={itemVariants} className="sidebar-section">
+            <div className="section-header">
+              <h3 className="section-title">CATEGORIAS</h3>
+              <button className="add-group-btn">
+                <FiPlus size={14} />
+              </button>
+            </div>
+            <ul className="sidebar-menu">
+              {availableCategories.length > 0 ? (
+                availableCategories.map((category) => (
+                  <li 
+                    key={category} 
+                    className={`menu-item ${activeSection === category ? 'active' : ''}`}
+                    onClick={() => loadTasksByCategory(category)}
+                  >
+                    <div className="menu-item-content">
+                      {category === 'Estudos' ? (
+                        <FiBookOpen className="menu-icon" />
+                      ) : category === 'Trabalho' ? (
+                        <FiBriefcase className="menu-icon" />
+                      ) : (
+                        <FiUser className="menu-icon" />
+                      )}
+                      <span>{category}</span>
+                    </div>
+                    <span className="task-count">{getTasksByCategory(category)}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="menu-item-empty">
+                  <span>Nenhuma categoria disponível</span>
+                </li>
+              )}
+            </ul>
+          </motion.div>
+          
+          <motion.div variants={itemVariants} className="sidebar-section user-profile-section">
+            <h3 className="section-title">USUÁRIO</h3>
+            <ul className="sidebar-menu">
+              <li className="menu-item" onClick={handleProfileClick}>
+                <div className="menu-item-content">
+                  <FiUser className="menu-icon" />
+                  <span>Meu Perfil</span>
+                </div>
+              </li>
+              <li className="menu-item" onClick={handleLogout}>
+                <div className="menu-item-content">
+                  <FiLogOut className="menu-icon" />
+                  <span>Sair</span>
+                </div>
+              </li>
+            </ul>
+          </motion.div>
+        </div>
         
         <motion.div variants={itemVariants} className="progress-section">
           <div className="progress-header">
@@ -319,14 +685,11 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="header-actions">
-            <button className="filter-btn">
-              <FiFilter size={16} />
-              <span>Filtrar</span>
-            </button>
             <motion.button 
               className="add-task-btn"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleAddTask}
             >
               <FiPlus size={16} />
               <span>Adicionar Tarefa</span>
@@ -336,8 +699,16 @@ const Dashboard = () => {
 
         <motion.div variants={itemVariants} className="tasks-section">
           <div className="tasks-header">
-            <h2 className="tasks-title">Todas as Tarefas</h2>
-            <span className="tasks-count">{totalTaskCount} tarefas</span>
+            <h2 className="tasks-title">
+              {activeSection === 'all' ? 'Todas as Tarefas' : 
+               activeSection === 'today' ? 'Tarefas de Hoje' : 
+               activeSection === 'pending' ? 'Tarefas Pendentes' :
+               activeSection === 'completed' ? 'Tarefas Concluídas' :
+               `Tarefas: ${activeSection}`}
+            </h2>
+            <span className="tasks-count">
+              {tasks.length} {tasks.length === 1 ? 'tarefa' : 'tarefas'}
+            </span>
           </div>
           
           <div className="search-container">
@@ -347,6 +718,7 @@ const Dashboard = () => {
               placeholder="Buscar tarefas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
               ref={searchInputRef}
               className="search-input"
             />
@@ -365,10 +737,14 @@ const Dashboard = () => {
                   variants={itemVariants}
                   whileHover={{ scale: 1.01 }}
                   layout
+                  onClick={() => handleTaskClick(task.id)}
                 >
                   <div 
                     className="task-checkbox"
-                    onClick={() => toggleTaskStatus(task.id, task.status)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Evitar que o clique no checkbox abra o modal
+                      toggleTaskStatus(task.id, task.status);
+                    }}
                   >
                     {task.status === 'concluída' ? (
                       <FiCheck className="check-icon" />
@@ -379,10 +755,12 @@ const Dashboard = () => {
                   <div className="task-content">
                     <h3 className="task-title">{task.nome}</h3>
                     <span className="task-date">
-                      Criada em {new Date(task.dataCriacao).toLocaleDateString('pt-BR', { 
-                        day: 'numeric',
-                        month: 'short'
-                      })}
+                      Criada em {formatDate(task.dataCriacao)}
+                      {task.dataCumprimento && (
+                        <>
+                          {' '}• Cumprir até: {formatDate(task.dataCumprimento)}
+                        </>
+                      )}
                     </span>
                   </div>
                   <div className={`task-tag ${getTaskTag(task).toLowerCase()}`}>

@@ -1,188 +1,159 @@
-# Taskly - API Backend
+# Taskly - Backend
 
 ## Sumário
 - [Descrição](#descrição)
 - [Funcionalidades](#funcionalidades)
-- [Setup e Execução](#setup-e-execução)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
+- [Pré-requisitos](#pré-requisitos)
+- [Configuração do Ambiente](#configuração-do-ambiente)
+- [Rodando o Backend](#rodando-o-backend)
 - [Uso com Docker](#uso-com-docker)
+- [Scripts Disponíveis](#scripts-disponíveis)
+- [Variáveis de Ambiente](#variáveis-de-ambiente)
 - [Documentação Swagger](#documentação-swagger)
-- [Endpoints](#endpoints)
+- [Endpoints Principais](#endpoints-principais)
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Segurança](#segurança)
 
+---
+
 ## Descrição
-API completa para gerenciamento de tarefas com autenticação de usuários, construída com Node.js, TypeScript, Express, TypeORM e PostgreSQL.
+
+API REST para gerenciamento de tarefas com autenticação JWT, construída em Node.js, TypeScript, Express, TypeORM e PostgreSQL.
+
+---
 
 ## Funcionalidades
 
-### Autenticação e Usuários
-- Registro de usuários com validação de email único
-- Login com JWT (JSON Web Token)
-- Autenticação obrigatória em todas as rotas de tarefas
-- Isolamento por usuário - cada usuário só acessa suas próprias tarefas
+- Cadastro e login de usuários com senha criptografada (bcrypt)
+- Autenticação JWT
+- CRUD completo de tarefas (criar, listar, buscar, atualizar, deletar)
+- Filtros por status e categoria
+- Isolamento de dados por usuário
+- Documentação automática via Swagger
+- Pronto para rodar localmente ou via Docker
 
-### Gerenciamento de Tarefas (CRUD Completo)
-- Criar tarefas com nome, descrição e status
-- Listar tarefas do usuário autenticado
-- Buscar tarefa por ID
-- Atualizar tarefas (nome, descrição, status)
-- Deletar tarefas
-- Filtrar por status (pendente/concluída)
-- Ordenação por data de criação (mais recentes primeiro)
+---
 
-### Segurança e Validações
-- Senhas criptografadas com bcrypt
-- Tokens JWT com expiração de 1 hora
-- Validações de entrada robustas
-- Sanitização de dados
-- Middleware de autenticação em todas as rotas protegidas
+## Pré-requisitos
 
-## Setup e Execução
+- Node.js (v18+ recomendado)
+- npm
+- Docker e Docker Compose (opcional, mas recomendado)
+- PostgreSQL (caso não use Docker)
 
-### 1. Instale as dependências
-```bash
-npm install
-```
+---
 
-### 2. Configure o arquivo `.env`
-Exemplo:
-```
-DB_HOST=postgres
-DB_PORT=5432
-DB_USER=seu_usuario
-DB_PASS=sua_senha_segura
-DB_NAME=taskly
-PORT=3000
-JWT_SECRET=sua_chave_secreta_jwt
-```
+## Configuração do Ambiente
 
-### 3. Suba o ambiente com Docker Compose
-```bash
-docker compose up --build
-```
+1. **Clone o repositório:**
+   ```bash
+   git clone <url-do-repo>
+   cd taskly/backend
+   ```
 
-A API estará disponível em `http://localhost:3000`.
+2. **Crie um arquivo `.env` na raiz do backend:**
+   ```
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=seu_usuario
+   DB_PASS=sua_senha
+   DB_NAME=taskly
+   PORT=3000
+   JWT_SECRET=sua_chave_secreta
+   ```
 
-## Variáveis de Ambiente
-- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`: Configurações do banco PostgreSQL
-- `PORT`: Porta do backend
-- `JWT_SECRET`: Chave secreta para assinatura dos tokens JWT
+---
+
+## Rodando o Backend
+
+### Usando Docker (recomendado)
+
+1. **Suba o ambiente:**
+   ```bash
+   docker compose up --build
+   ```
+   Isso irá subir o backend e o banco PostgreSQL juntos.
+
+2. **Acesse a API:**
+   ```
+   http://localhost:3000
+   ```
+
 
 ## Uso com Docker
-- O serviço do backend e do banco sobem juntos via `docker-compose.yml`
-- O banco de dados é persistido em volume Docker
-- Script de migração automática para tarefas existentes
+
+- O backend e o banco PostgreSQL sobem juntos via `docker-compose.yml`
+- O banco é persistido em volume Docker
+- O backend aplica scripts de atualização automática ao iniciar
+
+
+
+## Variáveis de Ambiente
+
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`: Configurações do PostgreSQL
+- `PORT`: Porta do backend (padrão: 3000)
+- `JWT_SECRET`: Chave secreta para tokens JWT
+
+---
 
 ## Documentação Swagger
+
 Acesse a documentação interativa dos endpoints em:
 ```
 http://localhost:3000/api-docs
 ```
 
-## Endpoints
+---
 
-### Autenticação
+## Endpoints Principais
 
-#### Cadastro de Usuário
+### Cadastro de Usuário
 - **POST** `/users`
-- **Body (JSON):**
-```json
-{
-  "nome": "João da Silva",
-  "email": "joao@email.com",
-  "senha": "minhaSenhaSegura"
-}
-```
+- **Body:**
+  ```json
+  {
+    "nome": "Seu Nome",
+    "email": "seu@email.com",
+    "senha": "suaSenha"
+  }
+  ```
 
-#### Login
+### Login
 - **POST** `/login`
-- **Body (JSON):**
-```json
-{
-  "email": "joao@email.com",
-  "senha": "minhaSenhaSegura"
-}
-```
-- **Resposta de sucesso:**
-```json
-{
-  "user": {
-  "id": "uuid-gerado",
-  "email": "joao@email.com",
-  "nome": "João da Silva",
-  "dataCriacao": "2024-05-30T12:34:56.789Z",
-  "dataAtualizacao": "2024-05-30T12:34:56.789Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIs..."
-}
-```
+- **Body:**
+  ```json
+  {
+    "email": "seu@email.com",
+    "senha": "suaSenha"
+  }
+  ```
 
-### Tarefas (Requer autenticação JWT)
+### Tarefas (requer autenticação JWT)
+- **POST** `/tarefas` — Criar tarefa
+- **GET** `/tarefas` — Listar tarefas
+- **GET** `/tarefas/:id` — Buscar tarefa por ID
+- **PUT** `/tarefas/:id` — Atualizar tarefa
+- **DELETE** `/tarefas/:id` — Deletar tarefa
 
-#### Criar Tarefa
-- **POST** `/tarefas`
-- **Headers:** `Authorization: Bearer <token>`
-- **Body (JSON):**
-```json
-{
-  "nome": "Estudar TypeScript",
-  "descricao": "Revisar decorators e interfaces",
-  "status": "pendente"
-}
+**Todas as rotas de tarefas exigem o header:**
+```
+Authorization: Bearer <seu_token_jwt>
 ```
 
-#### Listar Tarefas
-- **GET** `/tarefas`
-- **Headers:** `Authorization: Bearer <token>`
-- **Query params (opcional):** `?status=pendente`
-
-#### Buscar Tarefa por ID
-- **GET** `/tarefas/:id`
-- **Headers:** `Authorization: Bearer <token>`
-
-#### Atualizar Tarefa
-- **PUT** `/tarefas/:id`
-- **Headers:** `Authorization: Bearer <token>`
-- **Body (JSON):**
-```json
-{
-  "nome": "Estudar TypeScript e React",
-  "status": "concluída"
-}
-```
-
-#### Deletar Tarefa
-- **DELETE** `/tarefas/:id`
-- **Headers:** `Authorization: Bearer <token>`
+---
 
 ## Estrutura do Projeto
+
 ```
 backend/
 ├── src/
 │   ├── controllers/
-│   │   ├── AuthController.ts
-│   │   ├── UserController.ts
-│   │   └── TaskController.ts
 │   ├── services/
-│   │   ├── AuthService.ts
-│   │   ├── UserService.ts
-│   │   └── TaskService.ts
 │   ├── models/
-│   │   ├── Usuario.ts
-│   │   └── Tarefa.ts
 │   ├── routes/
-│   │   ├── auth.routes.ts
-│   │   ├── user.routes.ts
-│   │   └── task.routes.ts
 │   ├── middlewares/
-│   │   └── authMiddleware.ts
 │   ├── database/
-│   │   ├── data-source.ts
-│   │   └── update-existing-tasks.ts
 │   └── swagger.ts
-├── docs/
-│   └── modelagemER.md
 ├── Dockerfile
 ├── docker-compose.yml
 ├── package.json
@@ -190,23 +161,17 @@ backend/
 └── README.md
 ```
 
+---
+
 ## Segurança
 
-- Autenticação JWT obrigatória em rotas sensíveis
+- Autenticação JWT obrigatória em rotas protegidas
 - Senhas criptografadas com bcrypt
-- Validação de entrada em todos os endpoints
+- Validação e sanitização de dados
 - Isolamento de dados por usuário
-- Sanitização de dados de entrada
-- Verificação de propriedade das tarefas
-
-## Scripts Disponíveis
-
-```bash
-npm run dev          # Desenvolvimento com hot reload
-npm run build        # Compilar TypeScript
-npm run start        # Executar em produção
-```
 
 ---
 
-Para dúvidas, consulte a documentação Swagger ou abra uma issue. 
+## Dúvidas?
+
+Consulte a documentação Swagger ou abra uma issue. 

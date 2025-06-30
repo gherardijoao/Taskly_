@@ -22,9 +22,18 @@
  *         status:
  *           type: string
  *           enum: [pendente, concluída]
+ *         categoria:
+ *           type: string
+ *           nullable: true
+ *           description: Categoria ou grupo da tarefa
  *         dataCriacao:
  *           type: string
  *           format: date-time
+ *         dataCumprimento:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Data em que a tarefa foi concluída
  *         dataAtualizacao:
  *           type: string
  *           format: date-time
@@ -42,6 +51,13 @@
  *           type: string
  *           enum: [pendente, concluída]
  *           default: pendente
+ *         categoria:
+ *           type: string
+ *           nullable: true
+ *         dataCumprimento:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
  *     UpdateTarefaRequest:
  *       type: object
  *       properties:
@@ -53,6 +69,30 @@
  *         status:
  *           type: string
  *           enum: [pendente, concluída]
+ *         categoria:
+ *           type: string
+ *           nullable: true
+ *         dataCumprimento:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *     ResumoTarefas:
+ *       type: object
+ *       properties:
+ *         total:
+ *           type: integer
+ *           description: Total de tarefas
+ *         concluidas:
+ *           type: integer
+ *           description: Total de tarefas concluídas
+ *         pendentes:
+ *           type: integer
+ *           description: Total de tarefas pendentes
+ *         porCategoria:
+ *           type: object
+ *           additionalProperties:
+ *             type: integer
+ *           description: Contagem de tarefas por categoria
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
@@ -99,6 +139,28 @@
  *           type: string
  *           enum: [pendente, concluída]
  *         description: Filtrar tarefas por status
+ *       - in: query
+ *         name: categoria
+ *         schema:
+ *           type: string
+ *         description: Filtrar tarefas por categoria
+ *       - in: query
+ *         name: busca
+ *         schema:
+ *           type: string
+ *         description: Buscar tarefas por texto no nome
+ *       - in: query
+ *         name: dataInicio
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Data inicial para filtro (YYYY-MM-DD)
+ *       - in: query
+ *         name: dataFim
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Data final para filtro (YYYY-MM-DD)
  *     responses:
  *       200:
  *         description: Lista de tarefas
@@ -196,6 +258,108 @@
  *         description: Token não fornecido ou inválido
  */
 
+/**
+ * @openapi
+ * /tarefas/categoria/{categoria}:
+ *   get:
+ *     summary: Lista tarefas por categoria
+ *     tags:
+ *       - Tarefas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: categoria
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nome da categoria
+ *     responses:
+ *       200:
+ *         description: Lista de tarefas da categoria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Tarefa'
+ *       401:
+ *         description: Token não fornecido ou inválido
+ */
+
+/**
+ * @openapi
+ * /tarefas/hoje:
+ *   get:
+ *     summary: Lista tarefas criadas hoje
+ *     tags:
+ *       - Tarefas
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de tarefas de hoje
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Tarefa'
+ *       401:
+ *         description: Token não fornecido ou inválido
+ */
+
+/**
+ * @openapi
+ * /tarefas/busca:
+ *   get:
+ *     summary: Busca tarefas por texto
+ *     tags:
+ *       - Tarefas
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: busca
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Texto para busca
+ *     responses:
+ *       200:
+ *         description: Lista de tarefas encontradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Tarefa'
+ *       400:
+ *         description: Termo de busca não fornecido
+ *       401:
+ *         description: Token não fornecido ou inválido
+ */
+
+/**
+ * @openapi
+ * /tarefas/resumo:
+ *   get:
+ *     summary: Obtém resumo estatístico das tarefas
+ *     tags:
+ *       - Tarefas
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resumo das tarefas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ResumoTarefas'
+ *       401:
+ *         description: Token não fornecido ou inválido
+ */
+
 import { Router } from 'express';
 import { TarefaController } from '../controllers/TaskController';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -209,6 +373,22 @@ router.post('/tarefas', authMiddleware, async (req, res) => {
 
 router.get('/tarefas', authMiddleware, async (req, res) => {
   await tarefaController.getAll(req, res);
+});
+
+router.get('/tarefas/hoje', authMiddleware, async (req, res) => {
+  await tarefaController.getTarefasHoje(req, res);
+});
+
+router.get('/tarefas/busca', authMiddleware, async (req, res) => {
+  await tarefaController.buscarTarefas(req, res);
+});
+
+router.get('/tarefas/resumo', authMiddleware, async (req, res) => {
+  await tarefaController.getResumoTarefas(req, res);
+});
+
+router.get('/tarefas/categoria/:categoria', authMiddleware, async (req, res) => {
+  await tarefaController.getTarefasByCategoria(req, res);
 });
 
 router.get('/tarefas/:id', authMiddleware, async (req, res) => {

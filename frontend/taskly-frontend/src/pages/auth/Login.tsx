@@ -1,46 +1,59 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './Auth.css';
+import { authService } from '../../services/auth.service';
+
+// Interface para o estado de localização
+interface LocationState {
+  message?: string;
+}
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Verificar se o usuário já está autenticado
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
+  // Verificar se há mensagem de sucesso do registro
+  useEffect(() => {
+    const state = location.state as LocationState;
+    if (state?.message) {
+      setSuccessMessage(state.message);
+      // Limpar a mensagem do histórico
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setIsLoading(true);
 
     try {
-      // Implementar a lógica de login com a API
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email, 
-          senha: password 
-        }),
-      });
-
-      const data = await response.json(); 
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro ao fazer login');
-      }
-
-      // Salvar o token no localStorage
-      localStorage.setItem('token', data.token);
+      // Usar o serviço de autenticação para fazer login
+      const success = await authService.login(email, password);
       
-      // Redirecionar para o dashboard usando React Router
-      navigate('/dashboard');
+      if (success) {
+        // Redirecionar para o dashboard
+        navigate('/dashboard');
+      } else {
+        throw new Error('Credenciais inválidas');
+      }
     } catch (err: any) {
-      setError(err.message);
+      console.error('Erro no login:', err);
+      setError(err.message || 'Erro ao fazer login');
     } finally {
       setIsLoading(false);
     }
@@ -86,6 +99,17 @@ const Login = () => {
           transition={{ duration: 0.3 }}
         >
           {error}
+        </motion.div>
+      )}
+
+      {successMessage && (
+        <motion.div 
+          className="success-message"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {successMessage}
         </motion.div>
       )}
 
