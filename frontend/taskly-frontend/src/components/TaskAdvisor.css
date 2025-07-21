@@ -43,16 +43,46 @@
 }
 
 .task-advisor-content {
-  background-color: #101010;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  border-radius: 12px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: rgba(16, 16, 16, 0.92); /* leve transparência para efeito glass */
+  width: 100%;
+  max-width: 700px;
+  min-width: 340px;
+  max-height: 85vh;
+  border-radius: 22px;
+  box-shadow: 0 8px 48px 0 rgba(0,0,0,0.55), 0 0 0 1.5px rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.07);
+  color: #fff;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(10px) saturate(1.2);
+  padding: 0;
+  transition: max-width 0.2s, border-radius 0.2s;
+  max-width: 900px;
+}
+
+@media (max-width: 1200px) {
+  .task-advisor-content {
+    max-width: 99vw;
+  }
+}
+
+@media (max-width: 900px) {
+  .task-advisor-content {
+    max-width: 98vw;
+    min-width: 0;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .task-advisor-content {
+    width: 98vw;
+    max-width: 98vw;
+    min-width: 0;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
 }
 
 .task-advisor-header {
@@ -290,6 +320,47 @@
   font-size: 0.9rem;
   margin-top: 8px;
   text-align: center;
+}
+
+.task-advisor-bullet-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.task-advisor-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 1.08rem;
+  color: #fff;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: bulletIn 0.6s cubic-bezier(.6,-0.28,.74,.05) forwards;
+}
+
+.task-advisor-bullet-item .bullet-dot {
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 0 #fff2;
+  margin-top: 4px;
+}
+
+@keyframes bulletIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

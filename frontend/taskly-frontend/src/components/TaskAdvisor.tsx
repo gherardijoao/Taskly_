@@ -3,6 +3,7 @@ import { FiMessageSquare, FiX, FiZap } from 'react-icons/fi';
 import { TaskAdvisorService } from '../services/task-advisor.service';
 import type { TaskSuggestion } from '../services/task-advisor.service';
 import './TaskAdvisor.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TaskAdvisor: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -113,10 +114,22 @@ const TaskAdvisor: React.FC = () => {
               {suggestion && (
                 <div className={`task-advisor-result ${suggestion ? 'show' : ''}`}>
                   <h3>Dicas para completar sua tarefa</h3>
-                  <ul style={{ margin: '0 0 16px 0', paddingLeft: 20 }}>
-                    {suggestion.dicas.map((dica, idx) => (
-                      <li key={idx} style={{ marginBottom: 8, color: '#fff' }}>{dica}</li>
-                    ))}
+                  <ul className="task-advisor-bullet-list">
+                    <AnimatePresence>
+                      {suggestion.dicas.map((dica, idx) => (
+                        <motion.li
+                          className="task-advisor-bullet-item"
+                          key={idx}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{ delay: 0.08 * idx, duration: 0.5, type: 'spring', stiffness: 60 }}
+                        >
+                          <span className="bullet-dot" />
+                          <span>{dica}</span>
+                        </motion.li>
+                      ))}
+                    </AnimatePresence>
                   </ul>
                   <div className="suggestion-summary" style={{ color: '#bbb', fontStyle: 'italic', marginBottom: 8 }}>
                     {suggestion.resumo}
